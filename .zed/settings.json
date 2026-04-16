@@ -1,0 +1,9 @@
+{
+  "python": {
+    "interpreter": "backedn/.venv/bin/python",
+    "analysis": {
+      "venvPath": ".",
+      "venv": ".venv",
+    },
+  },
+}
