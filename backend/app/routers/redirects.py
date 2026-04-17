@@ -59,6 +59,7 @@ def create_auth_user_redirect(
     status_code=status.HTTP_201_CREATED,
 )
 def create_redirect(request: CreateRedirectRequest, db: db_dependency):
+    print(request)
     if request.alias and db.query(Redirect).filter(Redirect.alias == request.alias):
         raise HTTPException(status_code=409, detail="Alias already taken")
 
