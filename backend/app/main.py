@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from app.core.db import engine
 from app.core.settings import settings
@@ -11,6 +12,15 @@ app = FastAPI(
     # docs_url="/docs",  # default
     # redoc_url="/redoc", # default
 )
+
+if settings.all_cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.all_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 Base.metadata.create_all(engine)
 
