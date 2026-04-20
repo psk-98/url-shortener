@@ -15,9 +15,11 @@ type FormData = {
 
 export default function URLForm() {
 	const { copyToClipboard, isCopied } = useCopyToClipboard();
-
 	const [shortenedURL, setShortenedURL] = useState(null);
+
 	const baseApiUrl = import.meta.env.VITE_API_URL;
+	const baseUrl = import.meta.env.VITE_BASE_URL;
+
 	const form = useForm({
 		defaultValues: { url: "" } as FormData,
 		onSubmit: async ({ value }) => {
@@ -43,7 +45,7 @@ export default function URLForm() {
 	});
 	return (
 		<form
-			className="mb-6"
+			className="mb-6 min-w-10/12"
 			onSubmit={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
@@ -52,14 +54,14 @@ export default function URLForm() {
 		>
 			{shortenedURL ? (
 				<InputGroup>
-					<InputGroupInput placeholder="https://x.com/shadcn" readOnly />
+					<InputGroupInput placeholder={`${baseUrl}${shortenedURL}`} readOnly />
 					<InputGroupAddon align="inline-end">
 						<InputGroupButton
 							aria-label="Copy"
 							title="Copy"
 							size="icon-xs"
 							onClick={() => {
-								copyToClipboard("https://x.com/shadcn");
+								copyToClipboard(`${baseUrl}${shortenedURL}`);
 							}}
 						>
 							{isCopied ? <IconCheck /> : <IconCopy />}
