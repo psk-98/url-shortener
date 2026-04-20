@@ -35,7 +35,7 @@ def generate_unique_code(db):
             return alias
 
 
-@router.get("/redirects/top", response_model=list[RedirectTopResponse])
+@router.get("/top", response_model=list[RedirectTopResponse])
 def get_top_redirects(db: db_dependency, limit: int = 20):
     top_redirects = (
         db.query(Redirect, func.count(Visit.id).label("visit_count"))

@@ -16,30 +16,20 @@ import {
 type LinkRow = {
 	id: number;
 	url: string;
-	visits: number;
+	visit_count: number;
+	alias: string;
 };
 
-const dummyLinks: LinkRow[] = [
-	{ id: 1, url: "https://short.ly/abc123", visits: 24 },
-	{ id: 2, url: "https://short.ly/xyz789", visits: 11 },
-	{ id: 3, url: "https://short.ly/qwe456", visits: 57 },
-	{ id: 4, url: "https://short.ly/abc1233", visits: 24 },
-	{ id: 5, url: "https://short.ly/xyz7893", visits: 11 },
-	{ id: 6, url: "https://short.ly/qwe4563", visits: 57 },
-	{ id: 7, url: "https://short.ly/abc1234", visits: 24 },
-	{ id: 8, url: "https://short.ly/xyz7894", visits: 11 },
-	{ id: 9, url: "https://short.ly/qwe4564", visits: 57 },
-];
-
-export default function LinksTable() {
+export default function LinksTable({ redirects }: { redirects: LinkRow[] }) {
 	const { copyToClipboard, copiedText, isCopied } = useCopyToClipboard();
+	const baseUrl = import.meta.env.VITE_BASE_URL;
 
 	const handleCopy = async (url: string) => {
 		await copyToClipboard(url);
 	};
 
 	return (
-		<div className="rounded-md border">
+		<div className="rounded-md border min-w-8/12 my-8">
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -50,19 +40,19 @@ export default function LinksTable() {
 				</TableHeader>
 
 				<TableBody>
-					{dummyLinks.map((link) => {
+					{redirects.map((link) => {
 						const rowCopied = isCopied && copiedText === link.url;
 
 						return (
 							<TableRow key={link.id}>
 								<TableCell className="font-medium">
 									<a
-										href={link.url}
+										href={`${baseUrl}${link.alias}`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="underline underline-offset-4"
 									>
-										{link.url}
+										{`${baseUrl}${link.alias}`}
 									</a>
 								</TableCell>
 
@@ -71,13 +61,13 @@ export default function LinksTable() {
 										type="button"
 										variant="outline"
 										size="sm"
-										onClick={() => handleCopy(link.url)}
+										onClick={() => handleCopy(`${baseUrl}${link.alias}`)}
 									>
 										{rowCopied ? <IconCheck /> : <IconCopy />}
 									</Button>
 								</TableCell>
 
-								<TableCell className="text-right">{link.visits}</TableCell>
+								<TableCell className="text-right">{link.visit_count}</TableCell>
 							</TableRow>
 						);
 					})}
