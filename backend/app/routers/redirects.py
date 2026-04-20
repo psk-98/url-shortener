@@ -11,6 +11,7 @@ from app.schema.redirects import (
     RedirectResponse,
     UpdateRedirectRequest,
 )
+from app.tasks import add_redirect_visit
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
 
@@ -34,6 +35,15 @@ def generate_unique_code(db):
 def get_auth_user_redirects(auth_user: user_dependency, db: db_dependency):
 
     return db.query(Redirect).filter(Redirect.owner == auth_user.get("user_id")).all()
+
+
+@router.get("/visit/{redirect_alias}", response_model=RedirectResponse)
+def get_redirect_user_is_visiting(db: db_dependency, redirect_alias: str):
+    redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
+    if redirect is None:
+        raise HTTPException(status_code=404, detail="Redirect not found")
+    add_redirect_visit.apply_async(args=[redirect.id])
+    return redirect
 
 
 @router.post("/", response_model=RedirectResponse, status_code=status.HTTP_201_CREATED)
