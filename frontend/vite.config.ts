@@ -8,18 +8,18 @@ import tailwindcss from '@tailwindcss/vite'
 import contentCollections from '@content-collections/vite'
 
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
-  plugins: [
-    devtools(),
-    contentCollections(),
-    tailwindcss(),
-    tanstackStart(),
-    viteReact({
-      babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
-    }),
-  ],
+	resolve: { tsconfigPaths: true },
+	plugins: [
+		devtools(),
+		contentCollections(),
+		tailwindcss(),
+		tanstackStart(),
+		viteReact({
+			babel: {
+				plugins: ['babel-plugin-react-compiler'],
+			},
+		}),
+	],
 })
 
 export default config

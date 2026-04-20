@@ -1,55 +1,55 @@
-import { IconCheck, IconCopy } from "@tabler/icons-react";
-import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
-import { useCopyToClipboard } from "#/hooks/useCopyToClipboard";
+import { IconCheck, IconCopy } from '@tabler/icons-react'
+import { useForm } from '@tanstack/react-form'
+import { useState } from 'react'
+import { useCopyToClipboard } from '#/hooks/useCopyToClipboard'
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupButton,
 	InputGroupInput,
-} from "../ui/input-group";
+} from '../ui/input-group'
 
 type FormData = {
-	url: string;
-};
+	url: string
+}
 
 export default function URLForm() {
-	const { copyToClipboard, isCopied } = useCopyToClipboard();
-	const [shortenedURL, setShortenedURL] = useState(null);
+	const { copyToClipboard, isCopied } = useCopyToClipboard()
+	const [shortenedURL, setShortenedURL] = useState(null)
 
-	const baseApiUrl = import.meta.env.VITE_API_URL;
-	const baseUrl = import.meta.env.VITE_BASE_URL;
+	const baseApiUrl = import.meta.env.VITE_API_URL
+	const baseUrl = import.meta.env.VITE_BASE_URL
 
 	const form = useForm({
-		defaultValues: { url: "" } as FormData,
+		defaultValues: { url: '' } as FormData,
 		onSubmit: async ({ value }) => {
-			console.log(value);
+			console.log(value)
 			const res = await fetch(`${baseApiUrl}/redirects/guest_redirect`, {
-				method: "POST",
+				method: 'POST',
 				headers: {
-					"Content-Type": "application/json",
-					Accept: "application/json",
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
 				},
 				body: JSON.stringify(value),
-			});
+			})
 
 			if (!res.ok) {
-				console.log(res);
-				throw new Error(`HTTP error: ${res.status}`);
+				console.log(res)
+				throw new Error(`HTTP error: ${res.status}`)
 			}
 
-			const data = await res.json();
-			setShortenedURL(data.alias);
-			console.log(data);
+			const data = await res.json()
+			setShortenedURL(data.alias)
+			console.log(data)
 		},
-	});
+	})
 	return (
 		<form
 			className="mb-6 min-w-10/12"
 			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
+				e.preventDefault()
+				e.stopPropagation()
+				form.handleSubmit()
 			}}
 		>
 			{shortenedURL ? (
@@ -61,7 +61,7 @@ export default function URLForm() {
 							title="Copy"
 							size="icon-xs"
 							onClick={() => {
-								copyToClipboard(`${baseUrl}${shortenedURL}`);
+								copyToClipboard(`${baseUrl}${shortenedURL}`)
 							}}
 						>
 							{isCopied ? <IconCheck /> : <IconCopy />}
@@ -74,11 +74,11 @@ export default function URLForm() {
 					validators={{
 						onChange: ({ value }) =>
 							!value
-								? "URL is required"
+								? 'URL is required'
 								: !/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/.test(
 											value,
 										)
-									? "Enter a valid URL"
+									? 'Enter a valid URL'
 									: undefined,
 					}}
 					children={(field) => (
@@ -109,5 +109,5 @@ export default function URLForm() {
 				/>
 			)}
 		</form>
-	);
+	)
 }
