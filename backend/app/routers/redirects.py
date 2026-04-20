@@ -3,12 +3,16 @@ import string
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 
 from app.core.deps import db_dependency, user_dependency
 from app.models import Redirect
+from app.models.visit import Visit
 from app.schema.redirects import (
     CreateRedirectRequest,
     RedirectResponse,
+    RedirectTopResponse,
     UpdateRedirectRequest,
 )
 from app.tasks import add_redirect_visit
@@ -31,10 +35,40 @@ def generate_unique_code(db):
             return alias
 
 
-@router.get("/", response_model=List[RedirectResponse])
-def get_auth_user_redirects(auth_user: user_dependency, db: db_dependency):
+@router.get("/redirects/top", response_model=list[RedirectTopResponse])
+def get_top_redirects(db: db_dependency, limit: int = 20):
+    top_redirects = (
+        db.query(Redirect, func.count(Visit.id).label("visit_count"))
+        .outerjoin(Visit, Visit.redirect_id == Redirect.id)
+        .group_by(Redirect.id)
+        .order_by(func.count(Visit.id).desc())
+        .limit(limit)
+        .all()
+    )
 
-    return db.query(Redirect).filter(Redirect.owner == auth_user.get("user_id")).all()
+    return [
+        {
+            "id": redirect.id,
+            "alias": redirect.alias,
+            "url": redirect.url,
+            "visit_count": visit_count,
+        }
+        for redirect, visit_count in top_redirects
+    ]
+
+
+@router.get("/", response_model=List[RedirectResponse])
+def get_auth_user_redirects(
+    # auth_user: user_dependency,
+    db: db_dependency,
+):
+
+    return (
+        db.query(Redirect)
+        # .options(selectinload(Redirect.visits))
+        # .filter(Redirect.owner == auth_user.get("user_id"))
+        .all()
+    )
 
 
 @router.get("/visit/{redirect_alias}", response_model=RedirectResponse)

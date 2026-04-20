@@ -10,7 +10,7 @@ celery_app = Celery(main="tasks", broker="redis://localhost:6379")
 def add_redirect_visit(redirect_id: str):
     db = SessionLocal()
     try:
-        visit = Visit(redirect=redirect_id)
+        visit = Visit(redirect_id=redirect_id)
         db.add(visit)
         db.commit()
     finally:
