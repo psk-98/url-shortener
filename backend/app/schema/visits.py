@@ -1,10 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class VisitResponse(BaseModel):
+    id: int
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CreateVisitRequest(BaseModel):
