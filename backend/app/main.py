@@ -1,10 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.db import engine
+from app.core.deps import db_dependency
 from app.core.settings import settings
-from app.models import Base
+from app.models import Base, Redirect
 from app.routers import auth, redirects, users, visits
+from app.tasks import add_redirect_visit
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +26,17 @@ if settings.all_cors_origins:
     )
 
 Base.metadata.create_all(engine)
+
+
+# still deciding if frontend will use this
+@app.get("/{redirect_alias}")
+def handle_redirects(db: db_dependency, redirect_alias: str):
+    redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
+    if redirect is None:
+        raise HTTPException(status_code=404, detail="Redirect not found")
+    add_redirect_visit.apply_async(args=[redirect.id])
+    return RedirectResponse(url=str(redirect.url), status_code=302)
+
 
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
