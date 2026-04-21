@@ -4,7 +4,6 @@ from typing import List
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import func
-from sqlalchemy.orm import selectinload
 
 from app.core.deps import db_dependency, user_dependency
 from app.models import Redirect
