@@ -1,4 +1,30 @@
 services:
+  celery-worker:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    command: /start-celery-worker
+    environment:
+      CELERY_BROKER_URL: ${BROKER_URL}
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    command: /start-flower
+    volumes:
+      - .:/app
+    ports:
+      - "5557:5555"
+    depends_on:
+      - redis
+      - db
+
   redis-commander:
     image: ghcr.io/joeferner/redis-commander:latest
     container_name: redis-commander
@@ -9,10 +35,12 @@ services:
       - "8081:8081"
     depends_on:
       - redis
+
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+
   db:
     container_name: url-shortener-db
     image: postgres:15

@@ -27,11 +27,14 @@ class Settings(BaseSettings):
     )  # 8 days=60 minutes * 24 hours * 8 days
     FRONTEND_HOST: str = "http://localhost:5173"
     ENV: Literal["local", "staging", "production"] = "local"
+    CELERY_BROKER_URL: str = "redis://localhost:6379"
     DATABASE_NAME: str = ""
     DATABASE_USER: str
     DATABASE_PASSWORD: str = ""
     DATABASE_HOST: str
+    DATABASE_DOCKER_NETWORK_HOST: str
     DATABASE_PORT: int = 6543
+    DATABASE_DOCKER_NETWORK_PORT: int
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -42,6 +45,18 @@ class Settings(BaseSettings):
             password=self.DATABASE_PASSWORD,
             host=self.DATABASE_HOST,
             port=self.DATABASE_PORT,
+            path=self.DATABASE_NAME,
+        )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def CELERY_DATABASE_URI(self) -> PostgresDsn:
+        return PostgresDsn.build(
+            scheme="postgresql+psycopg2",
+            username=self.DATABASE_USER,
+            password=self.DATABASE_PASSWORD,
+            host=self.DATABASE_DOCKER_NETWORK_HOST,
+            port=self.DATABASE_DOCKER_NETWORK_PORT,
             path=self.DATABASE_NAME,
         )
 
