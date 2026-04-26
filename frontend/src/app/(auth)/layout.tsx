@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Montserrat, Roboto } from "next/font/google"
-import "./globals.css"
+import "@/app/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -30,7 +30,11 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-gray-950 antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <main className="flex justify-center items-center h-dvh w-full">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   )

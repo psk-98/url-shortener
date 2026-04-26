@@ -46,12 +46,10 @@ export default function URLForm() {
 
     const data = await res.json()
     setShortenedURL(data.alias)
-    console.log(data)
   }
 
   return (
     <form className="mb-6 min-w-10/12" onSubmit={handleSubmit(onSubmit)}>
-      {console.log(baseApiUrl)}
       {shortenedURL ? (
         <InputGroup>
           <InputGroupInput placeholder={`${baseUrl}${shortenedURL}`} readOnly />

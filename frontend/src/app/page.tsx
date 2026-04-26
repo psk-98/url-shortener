@@ -1,13 +1,13 @@
-import RedirectsTable from "@/components/home/redirectsTable"
-import URLForm from "@/components/home/urlForm"
+import { Suspense } from "react"
+import RedirectsTable from "@/components/home/redirects-table/redirects-table"
+import RedirectsTableSkeleton from "@/components/home/redirects-table/redirects-table-skeleton"
+import URLForm from "@/components/home/url-form"
 
 export default async function Home() {
-  const redirects = await getRedirects()
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      {console.log(redirects)}
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <h1 className="mt-16 text-4xl text-center">
+        <h1 className="mt-16 text-4xl text-center w-full">
           {"Shorten Your Loooong Links:)"}
         </h1>
         <p className="my-4 text-center">
@@ -15,7 +15,9 @@ export default async function Home() {
           streamlines your online experience
         </p>
 
-        <URLForm />
+        <div className="w-full flex justify-center">
+          <URLForm />
+        </div>
 
         {/* <div className="space-y-2">
 				<div className="flex items-center space-x-2">
@@ -27,19 +29,10 @@ export default async function Home() {
 					<Label htmlFor="airplane-mode">Auto Copy To Clipboard</Label>
 				</div>
 			</div> */}
-
-        <RedirectsTable redirects={redirects} />
+        <Suspense fallback={<RedirectsTableSkeleton />}>
+          <RedirectsTable />
+        </Suspense>
       </main>
     </div>
   )
-}
-
-const getRedirects = async () => {
-  const res = await fetch("http://127.0.0.1:8000/api/v1/redirects/top")
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch top redirects")
-  }
-
-  return res.json()
 }
