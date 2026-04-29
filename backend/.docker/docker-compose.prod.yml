@@ -1,51 +1,93 @@
 networks:
-  social-network:
+  url-shortener:
     driver: bridge
 
 services:
   load-balancer:
     image: nginx
-    container_name: social-network-nginx
+    container_name: url-shortener-nginx
     restart: unless-stopped
     ports:
       - "8000:80"
     networks:
-      - social-network
+      - url-shortener
     volumes:
       - ./.docker/nginx:/etc/nginx/conf.d
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: ./.docker/app/Dockerfile
+    command: /start-celery-worker
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+    networks:
+      - url-shortener
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./.docker/app/Dockerfile
+    command: /start-flower
+    environment:
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+    volumes:
+      - .:/app
+    ports:
+      - "5557:5555"
+    networks:
+      - url-shortener
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - url-shortener
+
   app-1:
-    container_name: social-app-instance-1
+    container_name: url-shortener-instance-1
     build:
+      context: .
       dockerfile: ./.docker/app/Dockerfile
+    command: /start
     restart: unless-stopped
     depends_on:
       - db
     networks:
-      - social-network
-  app-2:
-    container_name: social-app-instance-2
-    build:
-      dockerfile: ./.docker/app/Dockerfile
-    restart: unless-stopped
-    depends_on:
-      - db
-    networks:
-      - social-network
-  app-3:
-    container_name: social-app-instance-3
-    build:
-      dockerfile: ./.docker/app/Dockerfile
-    restart: unless-stopped
-    depends_on:
-      - db
-    networks:
-      - social-network
+      - url-shortener
+  # app-2:
+  #   container_name: url-shortener-instance-2
+  #   build:
+  #     dockerfile: ./.docker/app/Dockerfile
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - url-shortener
+  # app-3:
+  #   container_name: url-shortener-instance-3
+  #   build:
+  #     dockerfile: ./.docker/app/Dockerfile
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - url-shortener
   db:
-    container_name: social-media-db
+    container_name: url-shortener-db
     image: postgres:15
     restart: unless-stopped
     networks:
-      - social-network
+      - url-shortener
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:

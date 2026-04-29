@@ -15,6 +15,9 @@ COPY . /code/
 COPY ./.docker/app/entrypoint /entrypoint
 RUN chmod +x /entrypoint
 
+COPY ./.docker/app/start /start
+RUN chmod +x /start
+
 COPY ./.docker/app/start-celery-worker /start-celery-worker
 RUN chmod +x /start-celery-worker
 

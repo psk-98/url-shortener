@@ -1,9 +1,10 @@
 from celery import Celery
 
 from app.core.db import CelerySessionLocal
+from app.core.settings import settings
 from app.models.visit import Visit
 
-celery_app = Celery(main="tasks", broker="redis://localhost:6379")
+celery_app = Celery(main="tasks", broker=settings.CELERY_BROKER_URL)
 
 
 @celery_app.task
