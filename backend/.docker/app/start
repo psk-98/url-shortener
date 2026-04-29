@@ -3,4 +3,5 @@
 set -o errexit
 
 #alembic upgrade head
-uvicorn main:app --reload --reload-dir project --host 0.0.0.0
+# uvicorn main:app --reload --reload-dir project --host 0.0.0.0
+uv run fastapi run app/main.py

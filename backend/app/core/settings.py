@@ -43,8 +43,12 @@ class Settings(BaseSettings):
             scheme="postgresql+psycopg2",
             username=self.DATABASE_USER,
             password=self.DATABASE_PASSWORD,
-            host=self.DATABASE_HOST,
-            port=self.DATABASE_PORT,
+            host=self.DATABASE_HOST
+            if self.ENV == "local"
+            else self.DATABASE_DOCKER_NETWORK_HOST,
+            port=self.DATABASE_PORT
+            if self.ENV == "local"
+            else self.DATABASE_DOCKER_NETWORK_PORT,
             path=self.DATABASE_NAME,
         )
 
