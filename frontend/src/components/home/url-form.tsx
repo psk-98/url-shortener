@@ -17,7 +17,6 @@ export default function URLForm() {
   const { copyToClipboard, isCopied } = useCopyToClipboard()
   const [shortenedURL, setShortenedURL] = useState<string | null>(null)
 
-  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
   const {
@@ -30,7 +29,7 @@ export default function URLForm() {
   })
 
   const onSubmit = async (values: URLFormData) => {
-    const res = await fetch(`${baseApiUrl}/redirects/guest_redirect`, {
+    const res = await fetch("api/home/redirects", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +43,7 @@ export default function URLForm() {
       throw new Error(`HTTP error: ${res.status}`)
     }
 
-    const data = await res.json()
+    const { data } = await res.json()
     setShortenedURL(data.alias)
   }
 

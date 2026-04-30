@@ -133,7 +133,7 @@ def update_redirect(
     if redirect_model.id != auth_user.get("user_id"):
         raise HTTPException(status_code=401, detail="Unathorized")
 
-    redirect_model.url = request.url
+    redirect_model.url = request.url  # type: ignore
     db.add(redirect_model)
     db.commit()
 

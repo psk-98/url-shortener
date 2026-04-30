@@ -5,17 +5,14 @@ import { da } from "zod/locales"
 export async function POST(request: NextRequest) {
   const body = await request.json()
 
-  const res = await fetch(
-    `${process.env.API_URL}/api/v1/auth/login/access_token`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(body),
+  const res = await fetch(`${process.env.API_URL}/auth/login/access_token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-  )
+    body: JSON.stringify(body),
+  })
 
   if (!res.ok) {
     return NextResponse.json(
