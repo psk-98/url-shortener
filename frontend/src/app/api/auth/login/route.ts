@@ -1,17 +1,20 @@
-import { headers } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
-import { da } from "zod/locales"
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
+  console.log(body)
 
+  const formData = new URLSearchParams()
+
+  formData.append("username", body.username)
+  formData.append("password", body.password)
   const res = await fetch(`${process.env.API_URL}/auth/login/access_token`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(body),
+    body: formData,
   })
 
   if (!res.ok) {
