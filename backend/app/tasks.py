@@ -4,7 +4,7 @@ from app.core.db import CelerySessionLocal
 from app.core.settings import settings
 from app.models.visit import Visit
 
-celery_app = Celery(main="tasks", broker=settings.CELERY_BROKER_URL)
+celery_app = Celery(main="tasks", broker=settings.CELERY_BROKER_URI)
 
 
 @celery_app.task

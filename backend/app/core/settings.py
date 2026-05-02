@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     )  # 8 days=60 minutes * 24 hours * 8 days
     FRONTEND_HOST: str = "http://localhost:5173"
     ENV: Literal["local", "staging", "production"] = "local"
-    CELERY_BROKER_URL: str = "redis://localhost:6379"
+    CELERY_BROKER_URI: str = "redis://localhost:6379"
     DATABASE_NAME: str = ""
     DATABASE_USER: str
     DATABASE_PASSWORD: str = ""

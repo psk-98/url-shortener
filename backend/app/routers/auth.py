@@ -9,7 +9,7 @@ from app.core.deps import db_dependency
 from app.core.security import create_access_token, hash_password, verify_password
 from app.core.settings import settings
 from app.models.user import User
-from app.schema.users import CreateUserRequest, TokenResponse, UserResponse
+from app.schemas.users import CreateUserRequest, TokenResponse, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -55,6 +55,12 @@ def login_access_token(
     "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
 )
 def create_user(request: CreateUserRequest, db: db_dependency):
+    if db.query(User).filter(User.username == request.username).first():
+        raise HTTPException(status_code=409, detail="Username already taken")
+
+    if db.query(User).filter(User.email == request.email).first():
+        raise HTTPException(status_code=409, detail="Email already taken")
+
     request_data = request.model_dump()
     request_data["password"] = hash_password(request.password)
     create_user_model = User(**request_data)

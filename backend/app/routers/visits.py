@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 
 from app.core.deps import db_dependency
 from app.models.visit import Visit
-from app.schema.visits import CreateVisitRequest, VisitResponse
+from app.schemas.visits import CreateVisitRequest, VisitResponse
 
 router = APIRouter(prefix="/visits", tags=["visits"])
 

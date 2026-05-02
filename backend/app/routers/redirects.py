@@ -8,7 +8,7 @@ from sqlalchemy import func
 from app.core.deps import db_dependency, user_dependency
 from app.models import Redirect
 from app.models.visit import Visit
-from app.schema.redirects import (
+from app.schemas.redirects import (
     CreateRedirectRequest,
     RedirectResponse,
     RedirectTopResponse,

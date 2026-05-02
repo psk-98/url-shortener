@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.schema.visits import VisitResponse
+from app.schemas.visits import VisitResponse
 
 
 class RedirectTopResponse(BaseModel):

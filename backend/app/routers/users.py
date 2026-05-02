@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.core.deps import db_dependency, user_dependency
 from app.core.security import bcrypt_context
 from app.models.user import User
-from app.schema.users import ChangeUserPasswordRequest, UpdateUserRequest, UserResponse
+from app.schemas.users import ChangeUserPasswordRequest, UpdateUserRequest, UserResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 

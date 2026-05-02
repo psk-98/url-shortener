@@ -45,8 +45,8 @@ class CreateUserRequest(BaseModel):
     email: EmailStr
     username: str
     password: str
-    is_active: bool
-    role: UserRole
+    is_active: bool = True
+    role: UserRole = UserRole.user
 
     model_config = {
         "json_schema_extra": {
