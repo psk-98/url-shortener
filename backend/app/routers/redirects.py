@@ -2,8 +2,8 @@ import secrets
 import string
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import func
+from fastapi import APIRouter, HTTPException, Query, status
+from sqlalchemy import func, or_
 
 from app.core.deps import db_dependency, user_dependency
 from app.models import Redirect
@@ -11,7 +11,9 @@ from app.models.visit import Visit
 from app.schemas.redirects import (
     CreateRedirectRequest,
     RedirectResponse,
+    RedirectsSortBy,
     RedirectTopResponse,
+    SortDirection,
     UpdateRedirectRequest,
 )
 from app.tasks import add_redirect_visit
@@ -51,23 +53,83 @@ def get_top_redirects(db: db_dependency, limit: int = 20):
             "alias": redirect.alias,
             "url": redirect.url,
             "visit_count": visit_count,
+            "created_at": redirect.created_at,
         }
         for redirect, visit_count in top_redirects
     ]
 
 
-@router.get("/", response_model=List[RedirectResponse])
+@router.get(
+    "/",
+    # response_model=List[RedirectResponse]
+)
 def get_auth_user_redirects(
-    # auth_user: user_dependency,
+    auth_user: user_dependency,
     db: db_dependency,
+    search: str | None = Query(default=None),
+    skip: int = Query(default=1, ge=1),
+    limit: int = Query(default=20, ge=1, le=50),
+    sort_by: RedirectsSortBy = Query(default=RedirectsSortBy.created_at),
+    sort_dir: SortDirection = Query(default=SortDirection.desc),
 ):
 
-    return (
-        db.query(Redirect)
-        # .options(selectinload(Redirect.visits))
-        # .filter(Redirect.owner == auth_user.get("user_id"))
-        .all()
+    visits_count = func.count(Visit.id).label("visits_count")
+    query = (
+        db.query(Redirect, visits_count)
+        .outerjoin(Visit, Visit.redirect_id == Redirect.id)
+        .filter(Redirect.owner == auth_user.get("user_id"))
+        .group_by(Redirect.id)
     )
+
+    if search:
+        search_term = f"%{search.strip()}%"
+
+        query = query.filter(
+            or_(
+                Redirect.alias.ilike(search_term),
+                Redirect.url.ilike(search_term),
+            )
+        )
+
+    sort_columns = {
+        RedirectsSortBy.created_at: Redirect.created_at,
+        RedirectsSortBy.visits_count: visits_count,
+    }
+
+    sort_column = sort_columns[sort_by]
+
+    if sort_dir == SortDirection.desc:
+        sort_column = sort_column.desc()
+    else:
+        sort_column = sort_column.asc()
+
+    total = query.count()
+
+    result_query = (
+        query.order_by(sort_column).offset((skip - 1) * limit).limit(limit).all()
+    )
+
+    return {
+        "data": [
+            {
+                "id": redirect.id,
+                "alias": redirect.alias,
+                "url": redirect.url,
+                "created_at": redirect.created_at,
+                "visits_count": count,
+            }
+            for redirect, count in result_query
+        ],
+        "meta": {
+            "page": skip,
+            "per_page": limit,
+            "total": total,
+            "last_page": (total + limit - 1) // limit,
+            "search": search,
+            "sort_by": sort_by,
+            "sort_dir": sort_dir,
+        },
+    }
 
 
 @router.get("/visit/{redirect_alias}", response_model=RedirectResponse)
@@ -83,7 +145,10 @@ def get_redirect_user_is_visiting(db: db_dependency, redirect_alias: str):
 def create_auth_user_redirect(
     request: CreateRedirectRequest, auth_user: user_dependency, db: db_dependency
 ):
-    if request.alias and db.query(Redirect).filter(Redirect.alias == request.alias):
+    if (
+        request.alias
+        and db.query(Redirect).filter(Redirect.alias == request.alias).first()
+    ):
         raise HTTPException(status_code=409, detail="Alias already taken")
 
     redirect = Redirect(**request.model_dump(), owner=auth_user.get("user_id"))

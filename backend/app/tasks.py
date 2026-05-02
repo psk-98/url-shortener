@@ -7,8 +7,8 @@ from app.models.visit import Visit
 celery_app = Celery(main="tasks", broker=settings.CELERY_BROKER_URI)
 
 
-@celery_app.task
-def add_redirect_visit(redirect_id: str):
+@celery_app.task(name="add_redirect_visit")
+def add_redirect_visit(redirect_id: str) -> None:
     db = CelerySessionLocal()
     try:
         visit = Visit(redirect_id=redirect_id)
