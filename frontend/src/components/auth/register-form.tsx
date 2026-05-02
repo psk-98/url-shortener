@@ -1,13 +1,13 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { LoginFormData, loginFormSchema } from "@/schemas/loginForm.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -16,10 +16,12 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Button } from "../ui/button"
 import { IconLoader } from "@tabler/icons-react"
+
+import Link from "next/link"
 import {
   RegisterFormData,
   registerFormSchema,
-} from "@/schemas/registerForm.schema"
+} from "@/schemas/register-form.schema"
 
 export function RegisterForm() {
   const router = useRouter()
@@ -67,10 +69,16 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Register</CardTitle>
+        <CardTitle>Register to an account</CardTitle>
         <CardDescription>
-          Use your username, email address and password to register.
+          Enter your email, username and password below to register to an
+          account
         </CardDescription>
+        <CardAction>
+          <Button variant="link" type="button" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+        </CardAction>
       </CardHeader>
 
       <CardContent>

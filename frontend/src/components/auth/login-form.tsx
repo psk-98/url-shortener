@@ -1,13 +1,14 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { LoginFormData, loginFormSchema } from "@/schemas/loginForm.schema"
+import { LoginFormData, loginFormSchema } from "@/schemas/login-form.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -16,6 +17,7 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Button } from "../ui/button"
 import { IconLoader } from "@tabler/icons-react"
+import Link from "next/link"
 
 export function LoginForm() {
   const router = useRouter()
@@ -62,10 +64,15 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Login</CardTitle>
+        <CardTitle>Login to your account</CardTitle>
         <CardDescription>
-          Use your username or email address to sign in.
+          Enter your email or username below to login to your account
         </CardDescription>
+        <CardAction>
+          <Button variant="link" type="button" asChild>
+            <Link href="/register">Register</Link>
+          </Button>
+        </CardAction>
       </CardHeader>
 
       <CardContent>
@@ -98,7 +105,15 @@ export function LoginForm() {
             </Field>
 
             <Field data-invalid={Boolean(errors.password)}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <div className="flex items-center">
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <Link
+                  href="/forgot-password"
+                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
 
               <Input
                 id="password"

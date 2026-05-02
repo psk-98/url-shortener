@@ -19,23 +19,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        "font-sans",
-        montserrat.variable,
-        robotoHeading.variable,
-      )}
-    >
-      <body className="min-h-full flex flex-col bg-gray-950 antialiased">
-        <ThemeProvider>
-          <main className="flex justify-center items-center h-dvh w-full">
-            {children}
-          </main>
-        </ThemeProvider>
-      </body>
-    </html>
+    <main className="flex justify-center items-center h-dvh w-full">
+      {children}
+    </main>
   )
 }

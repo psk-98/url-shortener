@@ -5,7 +5,7 @@ import { IconCheck, IconCopy } from "@tabler/icons-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
-import { type URLFormData, urlFormSchema } from "@/schemas/urlForm.schema"
+import { type URLFormData, urlFormSchema } from "@/schemas/url-form.schema"
 import {
   InputGroup,
   InputGroupAddon,

@@ -3,6 +3,7 @@ import { Montserrat, Roboto } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
+import Nav from "@/components/nav/nav"
 
 const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" })
 
@@ -30,7 +31,10 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-gray-950 antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <Nav />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
