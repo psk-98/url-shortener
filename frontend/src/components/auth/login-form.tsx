@@ -1,6 +1,5 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
 import { LoginFormData, loginFormSchema } from "@/schemas/login-form.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
@@ -14,12 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Button } from "../ui/button"
-import { IconLoader } from "@tabler/icons-react"
 import Link from "next/link"
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
+import { Input } from "../ui/input"
+import { IconLoader } from "@tabler/icons-react"
 
-export function LoginForm() {
+export default function LoginForm() {
   const router = useRouter()
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -48,12 +48,10 @@ export function LoginForm() {
       })
 
       const data = await response.json()
-
       if (!response.ok) {
         setServerError(data.message || "Login failed")
         return
       }
-
       router.push("/dashboard")
       router.refresh()
     } catch (e) {

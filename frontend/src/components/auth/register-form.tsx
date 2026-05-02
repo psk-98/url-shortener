@@ -23,7 +23,7 @@ import {
   registerFormSchema,
 } from "@/schemas/register-form.schema"
 
-export function RegisterForm() {
+export default function RegisterForm() {
   const router = useRouter()
   const [serverError, setServerError] = useState<string | null>(null)
 
