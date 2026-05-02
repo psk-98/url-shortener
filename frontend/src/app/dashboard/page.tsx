@@ -1,7 +1,7 @@
 import { Suspense } from "react"
-import RedirectsTable from "@/components/home/redirects-table/redirects-table"
 import RedirectsTableSkeleton from "@/components/home/redirects-table/redirects-table-skeleton"
 import URLForm from "@/components/home/url-form"
+import { RedirectsTableWrapper } from "@/components/user/redirects/redirects-table-wrapper"
 
 export default async function Home() {
   return (
@@ -30,7 +30,7 @@ export default async function Home() {
 				</div>
 			</div> */}
         <Suspense fallback={<RedirectsTableSkeleton />}>
-          <RedirectsTable />
+          <RedirectsTableWrapper />
         </Suspense>
       </main>
     </div>
