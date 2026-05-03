@@ -1,45 +1,12 @@
-// components/redirects/redirects-table-wrapper.tsx
-
 "use client"
 
 import { useMemo, useState } from "react"
 import { getRedirectColumns } from "./columns"
 import { RedirectsDataTable } from "./redirects-data-table"
 import { EditRedirectDialog } from "./edit-redirect-dialog"
+import { Redirect } from "@/lib/types"
 
-export type Redirect = {
-  id: number
-  alias: string
-  url: string
-  visits_count: number
-  created_on: string
-}
-
-const initialRedirects: Redirect[] = [
-  {
-    id: 1,
-    alias: "summer-sale",
-    url: "https://example.com/summer-sale",
-    visits_count: 124,
-    created_on: "2026-05-02",
-  },
-  {
-    id: 2,
-    alias: "google",
-    url: "https://google.com",
-    visits_count: 89,
-    created_on: "2026-04-28",
-  },
-  {
-    id: 3,
-    alias: "portfolio",
-    url: "https://paulkhoza.dev",
-    visits_count: 42,
-    created_on: "2026-04-21",
-  },
-]
-
-export function RedirectsTableWrapper() {
+export function RedirectsTableWrapper({ initialRedirects }) {
   const [redirects, setRedirects] = useState<Redirect[]>(initialRedirects)
   const [selectedRedirect, setSelectedRedirect] = useState<Redirect | null>(
     null,

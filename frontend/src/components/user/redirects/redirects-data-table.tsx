@@ -1,5 +1,3 @@
-// components/redirects/redirects-data-table.tsx
-
 "use client"
 
 import {

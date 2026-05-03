@@ -1,9 +1,9 @@
 import { Suspense } from "react"
-import RedirectsTableSkeleton from "@/components/home/redirects-table/redirects-table-skeleton"
 import URLForm from "@/components/home/url-form"
-import { RedirectsTableWrapper } from "@/components/user/redirects/redirects-table-wrapper"
+import RedirectsTableSkeleton from "@/components/user/redirects/redirects-table-skeleton"
+import Redirects from "@/components/user/redirects/redirects"
 
-export default async function Home() {
+export default async function Dashboard() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -30,7 +30,7 @@ export default async function Home() {
 				</div>
 			</div> */}
         <Suspense fallback={<RedirectsTableSkeleton />}>
-          <RedirectsTableWrapper />
+          <Redirects />
         </Suspense>
       </main>
     </div>

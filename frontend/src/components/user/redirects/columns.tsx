@@ -1,19 +1,10 @@
-// components/redirects/columns.tsx
-
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { IconCopy, IconEdit } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
-
-export type Redirect = {
-  id: number
-  alias: string
-  url: string
-  visits_count: number
-  created_on: string
-}
+import { Redirect } from "@/lib/types"
 
 type GetRedirectColumnsProps = {
   copiedId: number | null
@@ -74,7 +65,7 @@ export function getRedirectColumns({
         </Button>
       ),
       cell: ({ row }) => {
-        const date = new Date(row.original.created_on)
+        const date = new Date(row.original.created_at)
 
         return (
           <span>

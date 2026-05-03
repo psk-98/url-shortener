@@ -7,13 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import CopyRedirect from "./copy-redirect"
-
-type Redirect = {
-  id: number
-  url: string
-  visit_count: number
-  alias: string
-}
+import { Redirect } from "@/lib/types"
 
 export default async function RedirectsTable() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL

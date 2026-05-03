@@ -13,5 +13,7 @@ class Redirect(TimestampMixin, Base):
         String(20), unique=True, index=True, nullable=False
     )
     url: Mapped[str] = mapped_column(nullable=False)
-    owner: Mapped[str] = mapped_column(ForeignKey("user.id"), nullable=True, index=True)
+    owner: Mapped[str] = mapped_column(
+        ForeignKey("users.id"), nullable=True, index=True
+    )
     visits = relationship("Visit", back_populates="redirect")
