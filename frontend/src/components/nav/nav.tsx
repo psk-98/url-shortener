@@ -16,7 +16,7 @@ export default async function Nav() {
       <div className="flex justify-between">
         {isLoggedIn ? (
           <>
-            <Link href="/login" className="mr-4">
+            <Link href="dashboard/profile" className="mr-4">
               <Button variant="secondary">Profile</Button>
             </Link>
 

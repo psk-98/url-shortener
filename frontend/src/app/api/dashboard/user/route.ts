@@ -1,6 +1,28 @@
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 
+export async function GET() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("access_token")?.value
+
+  const res = await fetch(`${process.env.API_URL}/users`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    return NextResponse.json({ message: res }, { status: res.status })
+  }
+  console.log(data)
+  return NextResponse.json({
+    data: data,
+    success: true,
+  })
+}
+
 export async function PATCH(request: NextRequest) {
   const cookieStore = await cookies()
   const token = cookieStore.get("access_token")?.value
