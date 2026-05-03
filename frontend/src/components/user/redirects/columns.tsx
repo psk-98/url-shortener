@@ -24,7 +24,9 @@ export function getRedirectColumns({
       cell: ({ row }) => {
         const redirect = row.original
 
-        return <span className="font-medium">/{redirect.alias}</span>
+        return (
+          <span className="font-medium">{`${process.env.NEXT_PUBLIC_BASE_URL}${redirect.alias}`}</span>
+        )
       },
     },
     {
@@ -50,7 +52,7 @@ export function getRedirectColumns({
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="text-right">{row.original.visits_count}</div>
+        <div className="text-center">{row.original.visits_count}</div>
       ),
     },
     {
