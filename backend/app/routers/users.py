@@ -40,13 +40,13 @@ def update_auth_user(
 
     if request.username:
         existing_user = db.query(User).filter(User.username == request.username).first()
-        if existing_user and existing_user.id != auth_user.id:  # type: ignore
+        if existing_user and existing_user.id != user_model.id:  # type: ignore
             raise HTTPException(status_code=409, detail="Username already taken")
         user_model.username = request.username  # type: ignore
 
     if request.email:
         existing_user = db.query(User).filter(User.email == request.email).first()
-        if existing_user and existing_user.id != auth_user.id:  # type: ignore
+        if existing_user and existing_user.id != user_model.id:  # type: ignore
             raise HTTPException(status_code=409, detail="Email already taken")
         user_model.email = request.email  # type: ignore
 
