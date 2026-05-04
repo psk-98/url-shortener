@@ -1,4 +1,3 @@
-// components/forgot-password-form.tsx
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,11 +24,11 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
-  ForgotPasswordData,
+  type ForgotPasswordData,
   forgotPasswordSchema,
 } from "@/schemas/forgot-password.schema"
 
-export function ForgotPasswordForm() {
+export default function ForgotPasswordForm() {
   const [serverError, setServerError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 

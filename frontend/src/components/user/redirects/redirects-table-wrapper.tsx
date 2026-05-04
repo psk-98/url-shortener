@@ -1,10 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import type { Redirect } from "@/lib/types"
 import { getRedirectColumns } from "./columns"
-import { RedirectsDataTable } from "./redirects-data-table"
 import { EditRedirectDialog } from "./edit-redirect-dialog"
-import { Redirect } from "@/lib/types"
+import { RedirectsDataTable } from "./redirects-data-table"
 
 export function RedirectsTableWrapper({ initialRedirects }) {
   const [redirects, setRedirects] = useState<Redirect[]>(initialRedirects)

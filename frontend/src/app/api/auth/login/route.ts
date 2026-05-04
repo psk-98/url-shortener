@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  console.log(body)
 
   const formData = new URLSearchParams()
 
@@ -11,7 +10,6 @@ export async function POST(request: NextRequest) {
   const res = await fetch(`${process.env.API_URL}/auth/login/access_token`, {
     method: "POST",
     headers: {
-      // "Content-Type": "application/json",
       Accept: "application/json",
     },
     body: formData,

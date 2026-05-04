@@ -1,5 +1,13 @@
 "use client"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { IconLoader } from "@tabler/icons-react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import {
+  type UserInfoFormData,
+  userInfoFormSchema,
+} from "@/schemas/user-info-form.schema"
+import { Button } from "../ui/button"
 import {
   Card,
   CardContent,
@@ -7,18 +15,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import {
-  UserInfoFormData,
-  userInfoFormSchema,
-} from "@/schemas/user-info-form.schema"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Input } from "../ui/input"
-import { Button } from "../ui/button"
-import { IconLoader } from "@tabler/icons-react"
+import { User } from "@/lib/types"
 
-export default function UserInfoForm({ user }) {
+export default function UserInfoForm({ user }: User) {
   const [serverError, setServerError] = useState<string | null>(null)
 
   const {
@@ -33,15 +34,37 @@ export default function UserInfoForm({ user }) {
     },
   })
 
-  const onSubmit = async (data: UserInfoFormData) => {
-    console.log(data)
+  const onSubmit = async (values: UserInfoFormData) => {
+    console.log(values)
+
+    setServerError(null)
+
+    try {
+      const res = await fetch("/api/dashboard/user", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setServerError(data.message || "Update failed")
+      }
+    } catch (e) {
+      setServerError("Something went wrong. Please try again.")
+      console.log(e)
+    }
   }
   return (
-    <Card>
+    <Card className="col-span-12 lg:col-span-6">
       <CardHeader>
         <CardTitle>Update Your Info</CardTitle>
         <CardDescription>
-          Enter your email or username below to login to your account
+          Update your username and/or your email
         </CardDescription>
       </CardHeader>
 
@@ -89,19 +112,21 @@ export default function UserInfoForm({ user }) {
                 <FieldError>{errors.email.message}</FieldError>
               ) : null}
             </Field>
+
+            <Field>
+              <Button
+                type="submit"
+                className="relative w-full"
+                disabled={isSubmitting}
+              >
+                <span>Update</span>
+
+                {isSubmitting ? (
+                  <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
+                ) : null}
+              </Button>
+            </Field>
           </FieldGroup>
-
-          <Button
-            type="submit"
-            className="relative w-full"
-            disabled={isSubmitting}
-          >
-            <span>Update</span>
-
-            {isSubmitting ? (
-              <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
-            ) : null}
-          </Button>
         </form>
       </CardContent>
     </Card>

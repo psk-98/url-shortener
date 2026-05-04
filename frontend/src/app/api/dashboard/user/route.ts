@@ -1,5 +1,5 @@
 import { cookies } from "next/headers"
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -12,11 +12,13 @@ export async function GET() {
       Authorization: `Bearer ${token}`,
     },
   })
+
   const data = await res.json()
+
   if (!res.ok) {
     return NextResponse.json({ message: res }, { status: res.status })
   }
-  console.log(data)
+
   return NextResponse.json({
     data: data,
     success: true,
@@ -28,6 +30,7 @@ export async function PATCH(request: NextRequest) {
   const token = cookieStore.get("access_token")?.value
 
   const body = await request.json()
+
   const res = await fetch(`${process.env.API_URL}/users`, {
     method: "PATCH",
     headers: {
@@ -39,7 +42,8 @@ export async function PATCH(request: NextRequest) {
   })
 
   if (!res.ok) {
-    return NextResponse.json({ message: res }, { status: res.status })
+    // const error = await res.json()
+    return NextResponse.json({ message: res?.message }, { status: res.status })
   }
 
   return NextResponse.json({
@@ -59,7 +63,7 @@ export async function PUT(request: NextRequest) {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ password: body.new_password, ...body }),
   })
 
   if (!res.ok) {

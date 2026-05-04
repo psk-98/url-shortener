@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { Montserrat, Roboto } from "next/font/google"
 import "./globals.css"
+import Nav from "@/components/nav/nav"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
-import Nav from "@/components/nav/nav"
 
 const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" })
 

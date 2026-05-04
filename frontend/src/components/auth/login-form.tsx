@@ -1,23 +1,31 @@
 "use client"
 
-import { LoginFormData, loginFormSchema } from "@/schemas/login-form.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { IconLoader } from "@tabler/icons-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import {
+  type LoginFormData,
+  loginFormSchema,
+} from "@/schemas/login-form.schema"
+import { Button } from "../ui/button"
+import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import { Button } from "../ui/button"
-import Link from "next/link"
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "../ui/field"
 import { Input } from "../ui/input"
-import { IconLoader } from "@tabler/icons-react"
 
 export default function LoginForm() {
   const router = useRouter()
@@ -39,7 +47,7 @@ export default function LoginForm() {
     setServerError(null)
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,8 +55,8 @@ export default function LoginForm() {
         body: JSON.stringify(values),
       })
 
-      const data = await response.json()
-      if (!response.ok) {
+      const data = await res.json()
+      if (!res.ok) {
         setServerError(data.message || "Login failed")
         return
       }
@@ -66,11 +74,6 @@ export default function LoginForm() {
         <CardDescription>
           Enter your email or username below to login to your account
         </CardDescription>
-        <CardAction>
-          <Button variant="link" type="button" asChild>
-            <Link href="/register">Register</Link>
-          </Button>
-        </CardAction>
       </CardHeader>
 
       <CardContent>
@@ -105,12 +108,12 @@ export default function LoginForm() {
             <Field data-invalid={Boolean(errors.password)}>
               <div className="flex items-center">
                 <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Link
+                {/*<Link
                   href="/forgot-password"
                   className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
                   Forgot your password?
-                </Link>
+                </Link>*/}
               </div>
 
               <Input
@@ -127,19 +130,25 @@ export default function LoginForm() {
                 <FieldError>{errors.password.message}</FieldError>
               ) : null}
             </Field>
+
+            <Field>
+              <Button
+                type="submit"
+                className="relative w-full"
+                disabled={isSubmitting}
+              >
+                <span>Login</span>
+
+                {isSubmitting ? (
+                  <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
+                ) : null}
+              </Button>
+              <FieldDescription className="text-center">
+                Don&apos;t have an account?{" "}
+                <Link href="/register">Register</Link>
+              </FieldDescription>
+            </Field>
           </FieldGroup>
-
-          <Button
-            type="submit"
-            className="relative w-full"
-            disabled={isSubmitting}
-          >
-            <span>Login</span>
-
-            {isSubmitting ? (
-              <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
-            ) : null}
-          </Button>
         </form>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
-import Link from "next/link"
-import { Button } from "../ui/button"
 import { cookies } from "next/headers"
+import Link from "next/link"
 import LogoutButton from "../auth/logout-button"
+import { Button } from "../ui/button"
 
 export default async function Nav() {
   const cookieStore = await cookies()

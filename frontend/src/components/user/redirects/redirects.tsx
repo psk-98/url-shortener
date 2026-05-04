@@ -1,6 +1,6 @@
-import { Redirect } from "@/lib/types"
-import { RedirectsTableWrapper } from "./redirects-table-wrapper"
 import { cookies } from "next/headers"
+import type { Redirect } from "@/lib/types"
+import { RedirectsTableWrapper } from "./redirects-table-wrapper"
 
 export default async function Redirects() {
   const cookieStore = await cookies()
@@ -11,7 +11,7 @@ export default async function Redirects() {
   return <RedirectsTableWrapper initialRedirects={redirects.data} />
 }
 
-const getRedirects = async (token: string | null) => {
+const getRedirects = async (token: string | undefined) => {
   const res = await fetch(`${process.env.API_URL}/redirects`, {
     headers: {
       Authorization: `Bearer ${token}`,

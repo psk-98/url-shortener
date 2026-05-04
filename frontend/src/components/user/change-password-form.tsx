@@ -1,11 +1,14 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { IconLoader } from "@tabler/icons-react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import {
-  ChangePasswordData,
+  type ChangePasswordData,
   changePasswordSchema,
 } from "@/schemas/change-password-form.schema"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Button } from "../ui/button"
 import {
   Card,
   CardContent,
@@ -15,9 +18,6 @@ import {
 } from "../ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Input } from "../ui/input"
-import { Button } from "../ui/button"
-import { IconLoader } from "@tabler/icons-react"
-import { useState } from "react"
 
 export default function ChangePasswordForm() {
   const [serverError, setServerError] = useState<string | null>(null)
@@ -35,16 +35,36 @@ export default function ChangePasswordForm() {
     },
   })
 
-  const onSubmit = async (data: ChangePasswordData) => {
-    console.log(data)
+  const onSubmit = async (values: ChangePasswordData) => {
+    console.log(values)
+
+    setServerError(null)
+
+    try {
+      const res = await fetch("/api/dashboard/user", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setServerError(data.message || "Update failed")
+      }
+    } catch (e) {
+      setServerError("Something went wrong. Please try again.")
+      console.log(e)
+    }
   }
   return (
-    <Card>
+    <Card className="col-span-12 lg:col-span-6">
       <CardHeader>
-        <CardTitle>Update Your Info</CardTitle>
-        <CardDescription>
-          Enter your email or username below to login to your account
-        </CardDescription>
+        <CardTitle>Update Your Password</CardTitle>
+        <CardDescription>Update your password from here</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -113,19 +133,21 @@ export default function ChangePasswordForm() {
                 <FieldError>{errors.confirm_password.message}</FieldError>
               ) : null}
             </Field>
+
+            <Field>
+              <Button
+                type="submit"
+                className="relative w-full"
+                disabled={isSubmitting}
+              >
+                <span>Update</span>
+
+                {isSubmitting ? (
+                  <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
+                ) : null}
+              </Button>
+            </Field>
           </FieldGroup>
-
-          <Button
-            type="submit"
-            className="relative w-full"
-            disabled={isSubmitting}
-          >
-            <span>Update</span>
-
-            {isSubmitting ? (
-              <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
-            ) : null}
-          </Button>
         </form>
       </CardContent>
     </Card>

@@ -6,8 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import type { Redirect } from "@/lib/types"
 import CopyRedirect from "./copy-redirect"
-import { Redirect } from "@/lib/types"
 
 export default async function RedirectsTable() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
@@ -59,7 +59,7 @@ export default async function RedirectsTable() {
 }
 
 const getRedirects = async () => {
-  const res = await fetch("http://127.0.0.1:8000/api/v1/redirects/top")
+  const res = await fetch(`${process.env.API_URL}/api/v1/redirects/top`)
 
   if (!res.ok) {
     throw new Error("Failed to fetch top redirects")

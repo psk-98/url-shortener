@@ -1,10 +1,10 @@
 "use client"
 
-import type { ColumnDef } from "@tanstack/react-table"
 import { IconCopy, IconEdit } from "@tabler/icons-react"
-
+import type { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Redirect } from "@/lib/types"
+import type { Redirect } from "@/lib/types"
 
 type GetRedirectColumnsProps = {
   copiedId: number | null
@@ -25,7 +25,14 @@ export function getRedirectColumns({
         const redirect = row.original
 
         return (
-          <span className="font-medium">{`${process.env.NEXT_PUBLIC_BASE_URL}${redirect.alias}`}</span>
+          <a
+            href={`${process.env.NEXT_PUBLIC_BASE_URL}${redirect.alias}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium"
+          >
+            {`${process.env.NEXT_PUBLIC_BASE_URL}${redirect.alias}`}
+          </a>
         )
       },
     },
@@ -52,7 +59,7 @@ export function getRedirectColumns({
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="text-center">{row.original.visits_count}</div>
+        <div className="text-center">{row.original.visit_count}</div>
       ),
     },
     {
@@ -63,7 +70,7 @@ export function getRedirectColumns({
           type="button"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created on
+          Created on <ArrowUpDown className="h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {

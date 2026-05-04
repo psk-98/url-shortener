@@ -1,4 +1,3 @@
-// lib/validations/change-password.ts
 import { z } from "zod"
 
 export const changePasswordSchema = z

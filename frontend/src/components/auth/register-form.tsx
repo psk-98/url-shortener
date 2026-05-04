@@ -1,27 +1,31 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { IconLoader } from "@tabler/icons-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { Input } from "@/components/ui/input"
+import {
+  type RegisterFormData,
+  registerFormSchema,
+} from "@/schemas/register-form.schema"
+import { Button } from "../ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
-import { Button } from "../ui/button"
-import { IconLoader } from "@tabler/icons-react"
-
-import Link from "next/link"
 import {
-  RegisterFormData,
-  registerFormSchema,
-} from "@/schemas/register-form.schema"
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "../ui/field"
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -74,11 +78,6 @@ export default function RegisterForm() {
           Enter your email, username and password below to register to an
           account
         </CardDescription>
-        <CardAction>
-          <Button variant="link" type="button" asChild>
-            <Link href="/login">Login</Link>
-          </Button>
-        </CardAction>
       </CardHeader>
 
       <CardContent>
@@ -143,19 +142,25 @@ export default function RegisterForm() {
                 <FieldError>{errors.password.message}</FieldError>
               ) : null}
             </Field>
+
+            <Field>
+              <Button
+                type="submit"
+                className="relative w-full"
+                disabled={isSubmitting}
+              >
+                <span>Register</span>
+
+                {isSubmitting ? (
+                  <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
+                ) : null}
+              </Button>
+
+              <FieldDescription className="text-center">
+                Already have an account? <Link href="/register">Login</Link>
+              </FieldDescription>
+            </Field>
           </FieldGroup>
-
-          <Button
-            type="submit"
-            className="relative w-full"
-            disabled={isSubmitting}
-          >
-            <span>Register</span>
-
-            {isSubmitting ? (
-              <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
-            ) : null}
-          </Button>
         </form>
       </CardContent>
     </Card>
