@@ -48,7 +48,7 @@ export default function URLForm() {
   }
 
   return (
-    <form className="mb-6 min-w-10/12" onSubmit={handleSubmit(onSubmit)}>
+    <form className="mb-6 w-full lg:w-8/12" onSubmit={handleSubmit(onSubmit)}>
       {shortenedURL ? (
         <InputGroup>
           <InputGroupInput placeholder={`${baseUrl}${shortenedURL}`} readOnly />
@@ -68,7 +68,7 @@ export default function URLForm() {
         </InputGroup>
       ) : (
         <div className="space-y-1">
-          <InputGroup>
+          <InputGroup className="rounded-md">
             <InputGroupInput
               {...register("url")}
               placeholder="Enter a url.."
@@ -76,6 +76,7 @@ export default function URLForm() {
             />
             <InputGroupAddon align="inline-end">
               <InputGroupButton
+                className="rounded-md"
                 type="submit"
                 variant="secondary"
                 disabled={isSubmitting}

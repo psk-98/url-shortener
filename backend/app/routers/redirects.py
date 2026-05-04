@@ -1,6 +1,5 @@
 import secrets
 import string
-from typing import List
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, or_
@@ -26,7 +25,7 @@ def random_string(min_length: int = 5, max_length: int = 20) -> str:
     return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
 
 
-def generate_unique_code(db):
+def generate_unique_code(db) -> str:
     while True:
         alias = random_string()
 
@@ -116,7 +115,7 @@ def get_auth_user_redirects(
                 "alias": redirect.alias,
                 "url": redirect.url,
                 "created_at": redirect.created_at,
-                "visits_count": count,
+                "visit_count": count,
             }
             for redirect, count in result_query
         ],
@@ -137,7 +136,7 @@ def get_redirect_user_is_visiting(db: db_dependency, redirect_alias: str):
     redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
     if redirect is None:
         raise HTTPException(status_code=404, detail="Redirect not found")
-    add_redirect_visit.apply_async(args=[redirect.id])
+    add_redirect_visit.apply_async(args=[redirect.id])  # type: ignore[prop-decorator]
     return redirect
 
 
@@ -211,7 +210,7 @@ def delete_redirect(auth_user: user_dependency, db: db_dependency, redirect_alia
     if redirect_model is None:
         raise HTTPException(status_code=404, detail="Redirect not found")
     if redirect_model.id != auth_user.get("user_id"):
-        raise HTTPException(status_code=401, detail="Unathorized")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     db.query(Redirect).filter(Redirect.alias == redirect_alias).delete()
     db.commit()

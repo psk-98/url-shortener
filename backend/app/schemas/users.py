@@ -62,7 +62,9 @@ class CreateUserRequest(BaseModel):
 
 
 class CurrentUser(BaseModel):
-    user: str
+    user_id: int
+    username: str
+    user_role: str
 
 
 class TokenResponse(BaseModel):

@@ -9,7 +9,7 @@ export default async function Nav() {
 
   const isLoggedIn = Boolean(token)
   return (
-    <nav className="w-full px-16 py-8 flex justify-between">
+    <nav className="w-full px-10 md:px-16 lg:px-24 py-8 flex justify-between items-center">
       <div>
         <Link href="/">Logo here</Link>
       </div>

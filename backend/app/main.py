@@ -34,7 +34,7 @@ def handle_redirects(db: db_dependency, redirect_alias: str):
     redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
     if redirect is None:
         raise HTTPException(status_code=404, detail="Redirect not found")
-    add_redirect_visit.apply_async(args=[redirect.id])
+    add_redirect_visit.apply_async(args=[redirect.id])  # type: ignore[prop-decorator]
     return RedirectResponse(url=str(redirect.url), status_code=302)
 
 

@@ -17,9 +17,9 @@ def create_access_token(
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def verify_password(entered_password: str, user_password: str):
+def verify_password(entered_password: str, user_password: str) -> bool:
     return bcrypt_context.verify(entered_password, user_password)
 
 
-def hash_password(password: str):
+def hash_password(password: str) -> str:
     return bcrypt_context.hash(password)

@@ -30,7 +30,7 @@ export default function RootLayout({
         robotoHeading.variable,
       )}
     >
-      <body className="min-h-full flex flex-col bg-gray-950 antialiased">
+      <body className="min-h-full w-full flex flex-col bg-zinc-50 font-sans dark:bg-black antialiased ">
         <ThemeProvider>
           <Nav />
           {children}

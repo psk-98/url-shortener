@@ -15,9 +15,9 @@ export default async function RedirectsTable() {
   const redirects: Redirect[] = await getRedirects()
 
   return (
-    <div className="my-8 flex justify-center w-full">
-      <div className="rounded-md border min-w-8/12">
-        <Table>
+    <div className="w-full flex justify-center">
+      <div className="w-full lg:w-8/12">
+        <Table className="w-full">
           <TableHeader>
             <TableRow>
               <TableHead>URL Link</TableHead>

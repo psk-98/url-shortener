@@ -14,7 +14,7 @@ from app.schemas.users import CreateUserRequest, TokenResponse, UserResponse
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def authenticate_user(username_email: str, password: str, db):
+def authenticate_user(username_email: str, password: str, db) -> User | bool:
     user = (
         db.query(User)
         .filter(or_(User.username == username_email, User.email == username_email))
