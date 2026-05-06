@@ -16,7 +16,7 @@ export async function GET() {
   const data = await res.json()
 
   if (!res.ok) {
-    return NextResponse.json({ message: res }, { status: res.status })
+    return NextResponse.json({ message: data.detail }, { status: res.status })
   }
 
   return NextResponse.json({
@@ -42,8 +42,8 @@ export async function PATCH(request: NextRequest) {
   })
 
   if (!res.ok) {
-    // const error = await res.json()
-    return NextResponse.json({ message: res?.message }, { status: res.status })
+    const error = await res.json()
+    return NextResponse.json({ message: error.detail }, { status: res.status })
   }
 
   return NextResponse.json({
@@ -63,11 +63,12 @@ export async function PUT(request: NextRequest) {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ password: body.new_password, ...body }),
+    body: JSON.stringify({ password: body.current_password, ...body }),
   })
 
   if (!res.ok) {
-    return NextResponse.json({ message: res }, { status: res.status })
+    const error = await res.json()
+    return NextResponse.json({ message: error.detail }, { status: res.status })
   }
 
   return NextResponse.json({

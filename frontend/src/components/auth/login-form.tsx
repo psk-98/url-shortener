@@ -144,8 +144,8 @@ export default function LoginForm() {
                 ) : null}
               </Button>
               <FieldDescription className="text-center">
-                Don&apos;t have an account?{" "}
-                <Link href="/register">Register</Link>
+                Forgot password?{" "}
+                <Link href="/forgot-password">Reset password</Link>
               </FieldDescription>
             </Field>
           </FieldGroup>

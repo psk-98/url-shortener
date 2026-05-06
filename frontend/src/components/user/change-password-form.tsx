@@ -21,6 +21,7 @@ import { Input } from "../ui/input"
 
 export default function ChangePasswordForm() {
   const [serverError, setServerError] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
   const {
     register,
@@ -39,6 +40,7 @@ export default function ChangePasswordForm() {
     console.log(values)
 
     setServerError(null)
+    setIsSuccess(false)
 
     try {
       const res = await fetch("/api/dashboard/user", {
@@ -54,6 +56,8 @@ export default function ChangePasswordForm() {
 
       if (!res.ok) {
         setServerError(data.message || "Update failed")
+      } else {
+        setIsSuccess(true)
       }
     } catch (e) {
       setServerError("Something went wrong. Please try again.")
@@ -72,6 +76,12 @@ export default function ChangePasswordForm() {
           {serverError ? (
             <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
               {serverError}
+            </div>
+          ) : null}
+
+          {isSuccess ? (
+            <div className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-600">
+              Update successful
             </div>
           ) : null}
 

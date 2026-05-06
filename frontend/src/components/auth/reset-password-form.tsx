@@ -24,12 +24,15 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  type ForgotPasswordData,
-  forgotPasswordSchema,
-} from "@/schemas/forgot-password.schema"
 
-export default function ForgotPasswordForm() {
+import {
+  ResetPasswordData,
+  resetPasswordSchema,
+} from "@/schemas/reset-password.schema"
+import { useSearchParams } from "next/navigation"
+
+export default function ResetPasswordForm() {
+  const searchParams = useSearchParams()
   const [serverError, setServerError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
@@ -37,36 +40,42 @@ export default function ForgotPasswordForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordData>({
-    resolver: zodResolver(forgotPasswordSchema),
+  } = useForm<ResetPasswordData>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: "",
+      password: "",
+      confirm_password: "",
     },
   })
 
-  async function onSubmit(values: ForgotPasswordData) {
+  async function onSubmit(values: ResetPasswordData) {
     setServerError(null)
     setSuccessMessage(null)
 
+    const token: string | null = searchParams.get("token")
+
+    // if (!token) {
+    //   setServerError("Invalid or missing token")
+    //   return
+    // }
+
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ token, ...values }),
       })
 
       const data: { message?: string } = await response.json()
 
       if (!response.ok) {
-        setServerError(data.message ?? "Could not send reset link")
+        setServerError(data.message ?? "Could not reset password, try again")
         return
       }
 
-      setSuccessMessage(
-        data.message ?? "If this email exists, a reset link has been sent.",
-      )
+      setSuccessMessage(data.message ?? "Password reset successfully")
     } catch {
       setServerError("Something went wrong. Please try again.")
     }
@@ -75,14 +84,14 @@ export default function ForgotPasswordForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Forgot your password?</CardTitle>
+        <CardTitle>Reset your password?</CardTitle>
         <CardDescription>
-          Enter your email address and we’ll send you a reset link.
+          Enter your new password and confirm it to reset.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form id="forgot-password-form" onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             {serverError ? (
               <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -96,32 +105,51 @@ export default function ForgotPasswordForm() {
               </div>
             ) : null}
 
-            <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel htmlFor="email">Email address</FieldLabel>
+            <Field data-invalid={Boolean(errors.password)}>
+              <FieldLabel htmlFor="password">New Password</FieldLabel>
 
               <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                autoComplete="email"
-                aria-invalid={Boolean(errors.email)}
+                id="password"
+                type="password"
+                placeholder="new password"
+                autoComplete="password"
+                aria-invalid={Boolean(errors.password)}
                 disabled={isSubmitting}
-                {...register("email")}
+                {...register("password")}
               />
 
-              {errors.email ? (
-                <FieldError>{errors.email.message}</FieldError>
+              {errors.password ? (
+                <FieldError>{errors.password.message}</FieldError>
+              ) : null}
+            </Field>
+
+            <Field data-invalid={Boolean(errors.confirm_password)}>
+              <FieldLabel htmlFor="confirm_password">
+                Confirm Password
+              </FieldLabel>
+
+              <Input
+                id="confirm_password"
+                type="password"
+                placeholder="confirm password"
+                autoComplete="confirm password"
+                aria-invalid={Boolean(errors.confirm_password)}
+                disabled={isSubmitting}
+                {...register("confirm_password")}
+              />
+
+              {errors.confirm_password ? (
+                <FieldError>{errors.confirm_password.message}</FieldError>
               ) : null}
             </Field>
 
             <Field>
               <Button
                 type="submit"
-                form="forgot-password-form"
                 className="relative w-full"
                 disabled={isSubmitting}
               >
-                <span>Send reset link</span>
+                <span>Reset password</span>
 
                 {isSubmitting ? (
                   <IconLoader className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin" />
@@ -129,7 +157,8 @@ export default function ForgotPasswordForm() {
               </Button>
 
               <FieldDescription>
-                Remembered your password? <Link href="/login">Login</Link>
+                Can't reset your password? Get another{" "}
+                <Link href="/forgot-password">link</Link>
               </FieldDescription>
             </Field>
           </FieldGroup>

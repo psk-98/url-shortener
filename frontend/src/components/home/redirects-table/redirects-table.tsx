@@ -59,7 +59,7 @@ export default async function RedirectsTable() {
 }
 
 const getRedirects = async () => {
-  const res = await fetch(`${process.env.API_URL}/api/v1/redirects/top`)
+  const res = await fetch(`${process.env.API_URL}/redirects/top`)
 
   if (!res.ok) {
     throw new Error("Failed to fetch top redirects")

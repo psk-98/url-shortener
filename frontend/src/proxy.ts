@@ -10,12 +10,17 @@ export function proxy(request: NextRequest) {
   const isDashboardRoute = pathname.startsWith("/dashboard")
   const isLoginRoute = pathname === "/login"
   const isRegisterRoute = pathname === "/register"
+  const isResetRoute = pathname === "/reset-password"
+  const isForgotRoute = pathname === "/forgot-password"
 
   if (isDashboardRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
-  if ((isLoginRoute || isRegisterRoute) && isLoggedIn) {
+  if (
+    (isLoginRoute || isRegisterRoute || isResetRoute || isForgotRoute) &&
+    isLoggedIn
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
@@ -23,5 +28,11 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/dashboard/:path*"],
+  matcher: [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/dashboard/:path*",
+  ],
 }

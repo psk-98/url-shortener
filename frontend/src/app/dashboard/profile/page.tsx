@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
-import UserInfoForm from "@/components/user/user-info-form"
-import { User } from "@/lib/types"
 import ChangePasswordForm from "@/components/user/change-password-form"
+import UserInfoForm from "@/components/user/user-info-form"
+import type { User } from "@/lib/types"
 
 export default async function Profile() {
   const cookieStore = await cookies()

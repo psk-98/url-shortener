@@ -157,7 +157,7 @@ export default function RegisterForm() {
               </Button>
 
               <FieldDescription className="text-center">
-                Already have an account? <Link href="/register">Login</Link>
+                Already have an account? <Link href="/login">Login</Link>
               </FieldDescription>
             </Field>
           </FieldGroup>
