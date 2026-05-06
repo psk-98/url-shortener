@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Montserrat, Roboto } from "next/font/google"
 import "./globals.css"
+import Nav from "@/components/nav/nav"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -29,8 +30,11 @@ export default function RootLayout({
         robotoHeading.variable,
       )}
     >
-      <body className="min-h-full flex flex-col bg-gray-950 antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-full w-full flex flex-col bg-zinc-50 font-sans dark:bg-black antialiased ">
+        <ThemeProvider>
+          <Nav />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

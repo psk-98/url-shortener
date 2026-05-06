@@ -1,6 +1,19 @@
+from datetime import datetime
+from enum import Enum
+
 from pydantic import BaseModel, ConfigDict
 
-from app.schema.visits import VisitResponse
+from app.schemas.visits import VisitResponse
+
+
+class RedirectsSortBy(str, Enum):
+    created_at = "created_at"
+    visits_count = "visits_count"
+
+
+class SortDirection(str, Enum):
+    asc = "asc"
+    desc = "desc"
 
 
 class RedirectTopResponse(BaseModel):
@@ -8,6 +21,10 @@ class RedirectTopResponse(BaseModel):
     alias: str
     url: str
     visit_count: int
+    created_at: datetime
+
+
+# class UserRedirect
 
 
 class RedirectResponse(BaseModel):

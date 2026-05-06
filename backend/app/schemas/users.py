@@ -24,6 +24,15 @@ class ChangeUserPasswordRequest(BaseModel):
     }
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+
+
 class UserResponse(BaseModel):
     email: str
     username: str
@@ -45,8 +54,8 @@ class CreateUserRequest(BaseModel):
     email: EmailStr
     username: str
     password: str
-    is_active: bool
-    role: UserRole
+    is_active: bool = True
+    role: UserRole = UserRole.user
 
     model_config = {
         "json_schema_extra": {
@@ -62,7 +71,9 @@ class CreateUserRequest(BaseModel):
 
 
 class CurrentUser(BaseModel):
-    user: str
+    user_id: int
+    username: str
+    user_role: str
 
 
 class TokenResponse(BaseModel):

@@ -15,7 +15,3 @@ uv run fastapi dev app/main.py
 ```
 
 Visit http://localhost:8000
-
-There's also a seeder AI create you run it using the below
-
-`uv run python -m core.seeder`

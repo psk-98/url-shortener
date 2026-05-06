@@ -5,7 +5,7 @@ services:
       dockerfile: ./.docker/app/Dockerfile
     command: /start-celery-worker
     environment:
-      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URI}
     volumes:
       - .:/app
     depends_on:
@@ -18,7 +18,7 @@ services:
       dockerfile: ./.docker/app/Dockerfile
     command: /start-flower
     environment:
-      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URI}
     volumes:
       - .:/app
     ports:

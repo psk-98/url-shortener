@@ -1,12 +1,5 @@
 import type { Metadata } from "next"
-import { Montserrat, Roboto } from "next/font/google"
 import "@/app/globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils"
-
-const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" })
-
-const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,23 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        "font-sans",
-        montserrat.variable,
-        robotoHeading.variable,
-      )}
-    >
-      <body className="min-h-full flex flex-col bg-gray-950 antialiased">
-        <ThemeProvider>
-          <main className="flex justify-center items-center h-dvh w-full">
-            {children}
-          </main>
-        </ThemeProvider>
-      </body>
-    </html>
+    <main className="flex justify-center items-center min-h-screen w-full px-10">
+      {children}
+    </main>
   )
 }

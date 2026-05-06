@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 
 from jose import jwt
@@ -17,9 +19,17 @@ def create_access_token(
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def verify_password(entered_password: str, user_password: str):
+def verify_password(entered_password: str, user_password: str) -> bool:
     return bcrypt_context.verify(entered_password, user_password)
 
 
-def hash_password(password: str):
+def hash_password(password: str) -> str:
     return bcrypt_context.hash(password)
+
+
+def generate_reset_token() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def hash_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()

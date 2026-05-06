@@ -1,3 +1,4 @@
+from collections.abc import Generator
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -14,7 +15,7 @@ oauth2_bearer = OAuth2PasswordBearer(
 )
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db

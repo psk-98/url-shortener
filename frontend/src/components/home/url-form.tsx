@@ -5,7 +5,7 @@ import { IconCheck, IconCopy } from "@tabler/icons-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
-import { type URLFormData, urlFormSchema } from "@/schemas/urlForm.schema"
+import { type URLFormData, urlFormSchema } from "@/schemas/url-form.schema"
 import {
   InputGroup,
   InputGroupAddon,
@@ -17,7 +17,6 @@ export default function URLForm() {
   const { copyToClipboard, isCopied } = useCopyToClipboard()
   const [shortenedURL, setShortenedURL] = useState<string | null>(null)
 
-  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
   const {
@@ -30,7 +29,7 @@ export default function URLForm() {
   })
 
   const onSubmit = async (values: URLFormData) => {
-    const res = await fetch(`${baseApiUrl}/redirects/guest_redirect`, {
+    const res = await fetch("api/home/redirects", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,12 +43,12 @@ export default function URLForm() {
       throw new Error(`HTTP error: ${res.status}`)
     }
 
-    const data = await res.json()
+    const { data } = await res.json()
     setShortenedURL(data.alias)
   }
 
   return (
-    <form className="mb-6 min-w-10/12" onSubmit={handleSubmit(onSubmit)}>
+    <form className="mb-6 w-full lg:w-8/12" onSubmit={handleSubmit(onSubmit)}>
       {shortenedURL ? (
         <InputGroup>
           <InputGroupInput placeholder={`${baseUrl}${shortenedURL}`} readOnly />
@@ -69,7 +68,7 @@ export default function URLForm() {
         </InputGroup>
       ) : (
         <div className="space-y-1">
-          <InputGroup>
+          <InputGroup className="rounded-md">
             <InputGroupInput
               {...register("url")}
               placeholder="Enter a url.."
@@ -77,6 +76,7 @@ export default function URLForm() {
             />
             <InputGroupAddon align="inline-end">
               <InputGroupButton
+                className="rounded-md"
                 type="submit"
                 variant="secondary"
                 disabled={isSubmitting}
