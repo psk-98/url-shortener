@@ -19,6 +19,8 @@ from app.tasks import add_redirect_visit
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
 
+# still will decide if utms should be a separate
+
 
 def random_string(min_length: int = 5, max_length: int = 20) -> str:
     length = secrets.randbelow(max_length - min_length + 1) + min_length
@@ -35,6 +37,7 @@ def generate_unique_code(db) -> str:
             return alias
 
 
+# update for utm
 @router.get("/top", response_model=list[RedirectTopResponse])
 def get_top_redirects(db: db_dependency, limit: int = 20):
     top_redirects = (
