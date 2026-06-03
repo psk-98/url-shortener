@@ -6,7 +6,7 @@ from app.core.db import engine
 from app.core.deps import db_dependency
 from app.core.settings import settings
 from app.models import Base, Redirect
-from app.routers import auth, redirects, users, visits
+from app.routers import auth, redirects, users, utms, visits
 from app.tasks import add_redirect_visit
 
 app = FastAPI(
@@ -25,8 +25,6 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
-Base.metadata.create_all(engine)
-
 
 # still deciding if frontend will use this
 @app.get("/{redirect_alias}")
@@ -41,4 +39,5 @@ def handle_redirects(db: db_dependency, redirect_alias: str):
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(redirects.router, prefix=settings.API_V1_STR)
+app.include_router(utms.router, prefix=settings.API_V1_STR)
 app.include_router(visits.router, prefix=settings.API_V1_STR)

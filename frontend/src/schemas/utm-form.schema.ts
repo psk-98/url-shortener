@@ -1,13 +1,14 @@
 import z from "zod"
 
 export const utmGeneratorFormSchema = z.object({
-  baseUrl: z.string().url("Please enter a valid URL"),
-  utmSource: z.string().min(1, "UTM source is required"),
-  utmMedium: z.string().min(1, "UTM medium is required"),
-  utmCampaign: z.string().min(1, "UTM campaign is required"),
-  utmTerm: z.string().optional(),
-  utmContent: z.string().optional(),
-  customFields: z.array(
+  base_url: z.url("Please enter a valid URL"),
+  source: z.string().min(1, "UTM source is required"),
+  medium: z.string().min(1, "UTM medium is required"),
+  campaign: z.string().min(1, "UTM campaign is required"),
+  term: z.string().optional(),
+  content: z.string().optional(),
+  generated_url: z.url().optional(),
+  custom_fields: z.array(
     z.object({
       key: z
         .string()

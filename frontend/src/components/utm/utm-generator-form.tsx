@@ -33,53 +33,54 @@ export default function UtmGeneratorForm() {
   const form = useForm<UtmGeneratorformData>({
     resolver: zodResolver(utmGeneratorFormSchema),
     defaultValues: {
-      baseUrl: "",
-      utmSource: "",
-      utmMedium: "",
-      utmCampaign: "",
-      utmTerm: "",
-      utmContent: "",
-      customFields: [],
+      base_url: "",
+      source: "",
+      medium: "",
+      campaign: "",
+      term: "",
+      content: "",
+      generated_url: undefined,
+      custom_fields: [],
     },
   })
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "customFields",
+    name: "custom_fields",
   })
 
   const watchedValues = useWatch({ control: form.control })
 
   const generatedUrl = useMemo(() => {
-    const baseUrl = watchedValues.baseUrl
+    const base_url = watchedValues.base_url
 
-    if (!baseUrl) {
+    if (!base_url) {
       return ""
     }
     try {
-      const url = new URL(baseUrl)
+      const url = new URL(base_url)
 
-      if (watchedValues.utmSource) {
-        url.searchParams.set("utm_source", watchedValues.utmSource)
+      if (watchedValues.source) {
+        url.searchParams.set("utm_source", watchedValues.source)
       }
 
-      if (watchedValues.utmMedium) {
-        url.searchParams.set("utm_medium", watchedValues.utmMedium)
+      if (watchedValues.medium) {
+        url.searchParams.set("utm_medium", watchedValues.medium)
       }
 
-      if (watchedValues.utmCampaign) {
-        url.searchParams.set("utm_campaign", watchedValues.utmCampaign)
+      if (watchedValues.campaign) {
+        url.searchParams.set("utm_campaign", watchedValues.campaign)
       }
 
-      if (watchedValues.utmTerm) {
-        url.searchParams.set("utm_term", watchedValues.utmTerm)
+      if (watchedValues.term) {
+        url.searchParams.set("utm_term", watchedValues.term)
       }
 
-      if (watchedValues.utmContent) {
-        url.searchParams.set("utm_content", watchedValues.utmContent)
+      if (watchedValues.content) {
+        url.searchParams.set("utm_content", watchedValues.content)
       }
 
-      watchedValues.customFields?.forEach((field) => {
+      watchedValues.custom_fields?.forEach((field) => {
         if (field?.key && field?.value) {
           url.searchParams.set(field.key, field.value)
         }
@@ -91,9 +92,28 @@ export default function UtmGeneratorForm() {
     }
   }, [watchedValues])
 
-  function onSubmit(data: UtmGeneratorformData) {
-    console.log("Valid form data:", data)
+  const onSubmit = async (values: UtmGeneratorformData) => {
+    values.generated_url = generatedUrl
+    console.log("Valid form data:", values)
     console.log("Generated URL:", generatedUrl)
+
+    const res = await fetch("api/home/utms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Accept: "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+
+    if (!res.ok) {
+      // const data = await res.json()
+      console.log(res)
+      return
+      // throw new Error(`HTTP error: ${res.status}`)
+    }
+
+    const { data } = await res.json()
   }
 
   return (
@@ -104,7 +124,7 @@ export default function UtmGeneratorForm() {
           Build a trackable URL using UTM parameters and optional custom fields.
         </CardDescription>
       </CardHeader>
-
+      {console.log(form.formState.errors)}
       <CardContent>
         <form
           noValidate
@@ -113,17 +133,17 @@ export default function UtmGeneratorForm() {
         >
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="baseUrl">Website URL</FieldLabel>
+              <FieldLabel htmlFor="base_url">Website URL</FieldLabel>
               <Input
-                id="baseUrl"
+                id="base_url"
                 placeholder="https://example.com"
-                aria-invalid={!!form.formState.errors.baseUrl}
-                {...form.register("baseUrl")}
+                aria-invalid={!!form.formState.errors.base_url}
+                {...form.register("base_url")}
               />
               <FieldDescription>
                 This is the page users will land on.
               </FieldDescription>
-              <FieldError>{form.formState.errors.baseUrl?.message}</FieldError>
+              <FieldError>{form.formState.errors.base_url?.message}</FieldError>
             </Field>
           </FieldGroup>
 
@@ -132,44 +152,40 @@ export default function UtmGeneratorForm() {
           <FieldSet>
             <FieldGroup className="grid gap-4 md:grid-cols-3">
               <Field>
-                <FieldLabel htmlFor="utmSource">UTM Source</FieldLabel>
+                <FieldLabel htmlFor="source">UTM Source</FieldLabel>
                 <Input
-                  id="utmSource"
+                  id="source"
                   placeholder="google"
-                  aria-invalid={!!form.formState.errors.utmSource}
-                  {...form.register("utmSource")}
+                  aria-invalid={!!form.formState.errors.source}
+                  {...form.register("source")}
                 />
                 <FieldDescription>Example: google, facebook</FieldDescription>
-                <FieldError>
-                  {form.formState.errors.utmSource?.message}
-                </FieldError>
+                <FieldError>{form.formState.errors.source?.message}</FieldError>
               </Field>
 
               <Field>
                 <FieldLabel htmlFor="utmMedium">UTM Medium</FieldLabel>
                 <Input
-                  id="utmMedium"
+                  id="medium"
                   placeholder="cpc"
-                  aria-invalid={!!form.formState.errors.utmMedium}
-                  {...form.register("utmMedium")}
+                  aria-invalid={!!form.formState.errors.medium}
+                  {...form.register("medium")}
                 />
                 <FieldDescription>Example: cpc, email, social</FieldDescription>
-                <FieldError>
-                  {form.formState.errors.utmMedium?.message}
-                </FieldError>
+                <FieldError>{form.formState.errors.medium?.message}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="utmCampaign">UTM Campaign</FieldLabel>
+                <FieldLabel htmlFor="campaign">UTM Campaign</FieldLabel>
                 <Input
-                  id="utmCampaign"
+                  id="campaign"
                   placeholder="summer_sale"
-                  aria-invalid={!!form.formState.errors.utmCampaign}
-                  {...form.register("utmCampaign")}
+                  aria-invalid={!!form.formState.errors.campaign}
+                  {...form.register("campaign")}
                 />
                 <FieldDescription>Example: black_friday</FieldDescription>
                 <FieldError>
-                  {form.formState.errors.utmCampaign?.message}
+                  {form.formState.errors.campaign?.message}
                 </FieldError>
               </Field>
             </FieldGroup>
@@ -178,32 +194,30 @@ export default function UtmGeneratorForm() {
           <FieldSet>
             <FieldGroup className="grid gap-4 md:grid-cols-2">
               <Field>
-                <FieldLabel htmlFor="utmTerm">UTM Term</FieldLabel>
+                <FieldLabel htmlFor="term">UTM Term</FieldLabel>
                 <Input
-                  id="utmTerm"
+                  id="term"
                   placeholder="running_shoes"
-                  {...form.register("utmTerm")}
+                  {...form.register("term")}
                 />
                 <FieldDescription>
                   Optional. Usually used for paid search keywords.
                 </FieldDescription>
-                <FieldError>
-                  {form.formState.errors.utmTerm?.message}
-                </FieldError>
+                <FieldError>{form.formState.errors.term?.message}</FieldError>
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="utmContent">UTM Content</FieldLabel>
+                <FieldLabel htmlFor="content">UTM Content</FieldLabel>
                 <Input
-                  id="utmContent"
+                  id="content"
                   placeholder="banner_a"
-                  {...form.register("utmContent")}
+                  {...form.register("content")}
                 />
                 <FieldDescription>
                   Optional. Used to separate ads, buttons or creatives.
                 </FieldDescription>
                 <FieldError>
-                  {form.formState.errors.utmContent?.message}
+                  {form.formState.errors.content?.message}
                 </FieldError>
               </Field>
             </FieldGroup>
@@ -241,43 +255,43 @@ export default function UtmGeneratorForm() {
                 className="grid gap-3 rounded-md border p-4 md:grid-cols-[1fr_1fr_auto]"
               >
                 <Field>
-                  <FieldLabel htmlFor={`customFields.${index}.key`}>
+                  <FieldLabel htmlFor={`custom_fields.${index}.key`}>
                     Field Name
                   </FieldLabel>
                   <Input
-                    id={`customFields.${index}.key`}
+                    id={`custom_fields.${index}.key`}
                     placeholder="campaign_id"
                     aria-invalid={
-                      !!form.formState.errors.customFields?.[index]?.key
+                      !!form.formState.errors.custom_fields?.[index]?.key
                     }
-                    {...form.register(`customFields.${index}.key`)}
+                    {...form.register(`custom_fields.${index}.key`)}
                   />
                   <FieldDescription>
                     Example: campaign_id or ref
                   </FieldDescription>
                   <FieldError>
-                    {form.formState.errors.customFields?.[index]?.key?.message}
+                    {form.formState.errors.custom_fields?.[index]?.key?.message}
                   </FieldError>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor={`customFields.${index}.value`}>
+                  <FieldLabel htmlFor={`custom_fields.${index}.value`}>
                     Field Value
                   </FieldLabel>
                   <Input
-                    id={`customFields.${index}.value`}
+                    id={`custom_fields.${index}.value`}
                     placeholder="12345"
                     aria-invalid={
-                      !!form.formState.errors.customFields?.[index]?.value
+                      !!form.formState.errors.custom_fields?.[index]?.value
                     }
-                    {...form.register(`customFields.${index}.value`)}
+                    {...form.register(`custom_fields.${index}.value`)}
                   />
                   <FieldDescription>
                     The value for this custom parameter.
                   </FieldDescription>
                   <FieldError>
                     {
-                      form.formState.errors.customFields?.[index]?.value
+                      form.formState.errors.custom_fields?.[index]?.value
                         ?.message
                     }
                   </FieldError>
@@ -320,7 +334,9 @@ export default function UtmGeneratorForm() {
           )}
 
           <div className="flex gap-3">
-            <Button type="submit">Save URL</Button>
+            <Button type="submit" onClick={() => form.handleSubmit(onSubmit)}>
+              Save URL
+            </Button>
 
             <Button
               type="button"

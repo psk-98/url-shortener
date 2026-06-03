@@ -19,8 +19,6 @@ from app.tasks import add_redirect_visit
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
 
-# still will decide if utms should be a separate
-
 
 def random_string(min_length: int = 5, max_length: int = 20) -> str:
     length = secrets.randbelow(max_length - min_length + 1) + min_length
@@ -79,7 +77,7 @@ def get_auth_user_redirects(
     query = (
         db.query(Redirect, visits_count)
         .outerjoin(Visit, Visit.redirect_id == Redirect.id)
-        .filter(Redirect.owner == auth_user.get("user_id"))
+        .filter(Redirect.owner_id == auth_user.get("user_id"))
         .group_by(Redirect.id)
     )
 
@@ -153,7 +151,7 @@ def create_auth_user_redirect(
     ):
         raise HTTPException(status_code=409, detail="Alias already taken")
 
-    redirect = Redirect(**request.model_dump(), owner=auth_user.get("user_id"))
+    redirect = Redirect(**request.model_dump(), owner_id=auth_user.get("user_id"))
 
     if request.alias is None:
         redirect.alias = generate_unique_code(db)

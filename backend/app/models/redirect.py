@@ -1,5 +1,4 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -14,11 +13,14 @@ class Redirect(TimestampMixin, Base):
         String(20), unique=True, index=True, nullable=False
     )
     url: Mapped[str] = mapped_column(nullable=False)
-    owner: Mapped[str] = mapped_column(
+    owner_id: Mapped[str] = mapped_column(
         ForeignKey("users.id"), nullable=True, index=True
     )
-    is_utm: Mapped[bool] = mapped_column(nullable=False, index=True)
-    utm_details: Mapped[dict] = mapped_column(
-        JSONB, nullable=False
-    )  # if you using sqlite use JSON
-    visits = relationship("Visit", back_populates="redirect")
+
+    visits: Mapped[list["Visit"]] = relationship(
+        back_populates="redirect", cascade="all, delete-orphan"
+    )
+
+    utm: Mapped["Utm"] = relationship(
+        back_populates="redirect", uselist=False, cascade="all, delete-orphan"
+    )

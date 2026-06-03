@@ -12,17 +12,21 @@ export default async function Redirects() {
 }
 
 const getRedirects = async (token: string | undefined) => {
-  const res = await fetch(`${process.env.API_URL}/redirects`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-    method: "GET",
-  })
+  try {
+    const res = await fetch(`${process.env.API_URL}/redirects`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      method: "GET",
+    })
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch top redirects")
+    if (!res.ok) {
+      throw new Error("Failed to fetch top redirects")
+    }
+
+    return res.json()
+  } catch {
+    return []
   }
-
-  return res.json()
 }
