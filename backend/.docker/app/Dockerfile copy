@@ -9,7 +9,7 @@ WORKDIR /code
 COPY ./uv.lock /code/uv.lock
 COPY ./pyproject.toml /code/pyproject.toml
 
-RUN uv sync
+RUN uv sync --frozen --no-dev
 
 COPY . /code/
 

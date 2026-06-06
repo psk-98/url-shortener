@@ -2,6 +2,5 @@
 
 set -o errexit
 
-#alembic upgrade head
-# uvicorn main:app --reload --reload-dir project --host 0.0.0.0
-uv run fastapi run app/main.py
+uv run --no-sync alembic upgrade head
+uv run --no-sync fastapi run app/main.py

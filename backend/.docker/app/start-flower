@@ -13,6 +13,6 @@ until worker_ready; do
 done
 >&2 echo 'Celery workers is available'
 
-uv run celery flower \
+uv run --no-sync celery flower \
     --app=app.tasks \
     --broker="${CELERY_BROKER_URL}"

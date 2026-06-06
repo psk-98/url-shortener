@@ -6,12 +6,14 @@ dist/
 wheels/
 *.egg-info
 *.pyc
-.mypy_cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
 htmlcov
 
 # Virtual environments
-.venv
+.venv/
 
 .zed
 .DS_Store
@@ -19,3 +21,4 @@ htmlcov
 README.md
 .git
 test
+docker-compose.yml

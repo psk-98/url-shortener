@@ -7,6 +7,8 @@ wheels/
 *.egg-info
 *.pyc
 .mypy_cache
+.pytest_cache
+.ruff_cache
 .coverage
 htmlcov
 .cache

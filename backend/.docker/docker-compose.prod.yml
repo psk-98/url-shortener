@@ -55,8 +55,8 @@ services:
     networks:
       - url-shortener
 
-  app-1:
-    container_name: url-shortener-instance-1
+  app:
+    container_name: url-shortener-instance
     build:
       context: .
       dockerfile: ./.docker/app/Dockerfile
@@ -66,24 +66,6 @@ services:
       - db
     networks:
       - url-shortener
-  # app-2:
-  #   container_name: url-shortener-instance-2
-  #   build:
-  #     dockerfile: ./.docker/app/Dockerfile
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - url-shortener
-  # app-3:
-  #   container_name: url-shortener-instance-3
-  #   build:
-  #     dockerfile: ./.docker/app/Dockerfile
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - url-shortener
   db:
     container_name: url-shortener-db
     image: postgres:15
@@ -103,3 +85,4 @@ services:
 volumes:
   postgres_data:
     driver: local
+  app_v
