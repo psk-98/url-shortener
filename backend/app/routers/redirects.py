@@ -1,6 +1,3 @@
-import secrets
-import string
-
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, or_
 
@@ -15,48 +12,19 @@ from app.schemas.redirects import (
     SortDirection,
     UpdateRedirectRequest,
 )
-from app.tasks import add_redirect_visit
+from app.services.redirect_service import (
+    create_auth_user_redirect_service,
+    create_redirect_service,
+    get_top_redirects_service,
+)
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
-
-
-def random_string(min_length: int = 5, max_length: int = 20) -> str:
-    length = secrets.randbelow(max_length - min_length + 1) + min_length
-    return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
-
-
-def generate_unique_code(db) -> str:
-    while True:
-        alias = random_string()
-
-        exists = db.query(Redirect).filter(Redirect.alias == alias).first()
-
-        if not exists:
-            return alias
 
 
 # update for utm
 @router.get("/top", response_model=list[RedirectTopResponse])
 def get_top_redirects(db: db_dependency, limit: int = 20):
-    top_redirects = (
-        db.query(Redirect, func.count(Visit.id).label("visit_count"))
-        .outerjoin(Visit, Visit.redirect_id == Redirect.id)
-        .group_by(Redirect.id)
-        .order_by(func.count(Visit.id).desc())
-        .limit(limit)
-        .all()
-    )
-
-    return [
-        {
-            "id": redirect.id,
-            "alias": redirect.alias,
-            "url": redirect.url,
-            "visit_count": visit_count,
-            "created_at": redirect.created_at,
-        }
-        for redirect, visit_count in top_redirects
-    ]
+    return get_top_redirects_service(db, limit)
 
 
 @router.get(
@@ -132,33 +100,11 @@ def get_auth_user_redirects(
     }
 
 
-@router.get("/visit/{redirect_alias}", response_model=RedirectResponse)
-def get_redirect_user_is_visiting(db: db_dependency, redirect_alias: str):
-    redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
-    if redirect is None:
-        raise HTTPException(status_code=404, detail="Redirect not found")
-    add_redirect_visit.apply_async(args=[redirect.id])  # type: ignore[prop-decorator]
-    return redirect
-
-
 @router.post("/", response_model=RedirectResponse, status_code=status.HTTP_201_CREATED)
 def create_auth_user_redirect(
     request: CreateRedirectRequest, auth_user: user_dependency, db: db_dependency
 ):
-    if (
-        request.alias
-        and db.query(Redirect).filter(Redirect.alias == request.alias).first()
-    ):
-        raise HTTPException(status_code=409, detail="Alias already taken")
-
-    redirect = Redirect(**request.model_dump(), owner_id=auth_user.get("user_id"))
-
-    if request.alias is None:
-        redirect.alias = generate_unique_code(db)
-
-    db.add(redirect)
-    db.commit()
-    return redirect
+    return create_auth_user_redirect_service(request, auth_user, db)
 
 
 @router.post(
@@ -167,18 +113,7 @@ def create_auth_user_redirect(
     status_code=status.HTTP_201_CREATED,
 )
 def create_redirect(request: CreateRedirectRequest, db: db_dependency):
-    print(request)
-    if request.alias and db.query(Redirect).filter(Redirect.alias == request.alias):
-        raise HTTPException(status_code=409, detail="Alias already taken")
-
-    redirect = Redirect(**request.model_dump())
-
-    if request.alias is None:
-        redirect.alias = generate_unique_code(db)
-
-    db.add(redirect)
-    db.commit()
-    return redirect
+    return create_redirect_service(request, db)
 
 
 @router.patch(

@@ -17,7 +17,7 @@ class EmailData:
 
 def render_email_template(*, template_name: str, context: dict[str, Any]) -> str:
     template_str = (
-        Path(__file__).parent / "email_templates" / "build" / template_name
+        Path(__file__).parent.parent / "email_templates" / "build" / template_name
     ).read_text()
     html_content = Template(template_str).render(context)
     return html_content
@@ -31,7 +31,7 @@ def send_email(
         subject=subject,
         html=html_content,
         text=plain_text,
-        mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
+        mail_from=(str(settings.EMAILS_FROM_NAME), str(settings.EMAILS_FROM_EMAIL)),
     )
 
     smtp_options = {
@@ -48,7 +48,6 @@ def send_email(
         smtp_options["password"] = settings.SMTP_PASSWORD
 
     response = message.send(to=email_to, smtp=smtp_options)
-    print(response)
 
 
 def generate_password_reset_email(username: str, token: str) -> EmailData:

@@ -3,7 +3,7 @@ from celery import Celery
 from app.core.db import CelerySessionLocal
 from app.core.settings import settings
 from app.models.visit import Visit
-from app.utils import generate_password_reset_email, send_email
+from app.utils.email import generate_password_reset_email, send_email
 
 celery_app = Celery(main="tasks", broker=settings.CELERY_BROKER_URI)
 
