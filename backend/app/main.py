@@ -2,10 +2,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from app.core.db import engine
 from app.core.deps import db_dependency
 from app.core.settings import settings
-from app.models import Base, Redirect
+from app.models import Redirect
 from app.routers import auth, redirects, users, utms, visits
 from app.tasks import add_redirect_visit
 

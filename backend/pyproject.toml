@@ -16,6 +16,8 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "python-jose>=3.5.0",
     "sqlalchemy>=2.0.49",
+    "types-passlib>=1.7.7.20260211",
+    "types-python-jose>=3.5.0.20260408",
 ]
 
 [dependency-groups]
