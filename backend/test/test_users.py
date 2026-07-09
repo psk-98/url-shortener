@@ -1,8 +1,8 @@
+from app.core.deps import get_current_user, get_db
+from app.main import app
 from fastapi import status
 
-from app.core.deps import get_current_user, get_db
-from app.core.settings import settings
-from app.main import app
+
 from test.utils import (
     client,
     override_get_current_user,
