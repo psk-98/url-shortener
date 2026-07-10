@@ -6,7 +6,7 @@ export default async function Redirects() {
   const cookieStore = await cookies()
 
   const token = cookieStore.get("access_token")?.value
-  const redirects: Redirect[] = await getRedirects(token)
+  const redirects = await getRedirects(token)
 
   return <RedirectsTableWrapper initialRedirects={redirects.data} />
 }

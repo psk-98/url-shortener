@@ -11,14 +11,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Redirect } from "@/lib/types"
 
-export type Redirect = {
-  id: number
-  alias: string
-  url: string
-  visits_count: number
-  created_on: string
-}
+
 
 type EditRedirectDialogProps = {
   redirect: Redirect | null
