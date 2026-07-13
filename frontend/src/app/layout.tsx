@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Montserrat, Roboto } from "next/font/google"
 import "./globals.css"
+import { Analytics } from "@vercel/analytics/next"
 import Nav from "@/components/nav/nav"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Nav />
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
