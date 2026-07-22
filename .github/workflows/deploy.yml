@@ -33,4 +33,4 @@ jobs:
           ssh -i ~/.ssh/deploy_key \
           -p ${{ secrets.SSH_PORT }} \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          "bash \"/home/${{ secrets.SSH_USER }}/sites/url-shortener/backend/scripts/deploy.sh""
+          'bash "/home/${{ secrets.SSH_USER }}/sites/url-shortener/backend/scripts/deploy.sh"'
