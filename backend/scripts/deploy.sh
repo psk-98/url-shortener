@@ -13,5 +13,5 @@ git reset --hard "origin/trunk"
 echo "Going into backend dir"
 cd /home/lullaby/sites/url-shortener/backend
 
-cp .docker/docker-composer.prod.yml docker-compose.yml
+cp /home/lullaby/sites/url-shortener/backend/.docker/docker-composer.prod.yml /home/lullaby/sites/url-shortener/backend/docker-compose.yml
 sudo docker compose up -d --build
