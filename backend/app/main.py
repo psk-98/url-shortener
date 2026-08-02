@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.core.db import engine
 from app.core.deps import db_dependency
 from app.core.settings import settings
+from app.middleware import MetricsMiddleware
 from app.models import Base, Redirect
 from app.routers import auth, redirects, users, visits
 from app.tasks import add_redirect_visit
@@ -24,6 +25,8 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+app.middleware(MetricsMiddleware)
 
 Base.metadata.create_all(engine)
 
