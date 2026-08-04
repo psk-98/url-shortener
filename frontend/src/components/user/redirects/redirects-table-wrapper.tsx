@@ -6,7 +6,11 @@ import { getRedirectColumns } from "./columns"
 import { EditRedirectDialog } from "./edit-redirect-dialog"
 import { RedirectsDataTable } from "./redirects-data-table"
 
-export function RedirectsTableWrapper({ initialRedirects }: { initialRedirects: Redirect[] }) {
+export function RedirectsTableWrapper({
+  initialRedirects,
+}: {
+  initialRedirects: Redirect[]
+}) {
   const [redirects, setRedirects] = useState<Redirect[]>(initialRedirects)
   const [selectedRedirect, setSelectedRedirect] = useState<Redirect | null>(
     null,

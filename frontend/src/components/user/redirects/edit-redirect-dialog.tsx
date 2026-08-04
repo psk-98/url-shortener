@@ -13,8 +13,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Redirect } from "@/lib/types"
 
-
-
 type EditRedirectDialogProps = {
   redirect: Redirect | null
   url: string

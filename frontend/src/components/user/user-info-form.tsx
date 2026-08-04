@@ -19,7 +19,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
 import { Input } from "../ui/input"
 import { User } from "@/lib/types"
 
-export default function UserInfoForm( { user }: { user: User }) {
+export default function UserInfoForm({ user }: { user: User }) {
   const [serverError, setServerError] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
