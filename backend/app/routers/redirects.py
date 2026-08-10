@@ -16,6 +16,7 @@ from app.schemas.redirects import (
     UpdateRedirectRequest,
 )
 from app.tasks import add_redirect_visit
+from sqlalchemy.exc import IntergrityError
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
 
@@ -25,14 +26,29 @@ def random_string(min_length: int = 5, max_length: int = 20) -> str:
     return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
 
 
-def generate_unique_code(db) -> str:
-    while True:
-        alias = random_string()
+def generate_unique_code(db,request) -> Redirect:
+    alias = random_string()
+    redirect = Redirect(**request.model_dump()
+)
+    # exists = db.query(Redirect).filter(Redirect.alias == alias).first()
+    for _ in range(5):
+      redirect.alias = random_string()
 
-        exists = db.query(Redirect).filter(Redirect.alias == alias).first()
+      try:
+        db.add(redirect)
+        db.commit()
+        db.refresh(redirect)
+        
+        return redirect
+      except IntegrityError as err:
+        db.rollback()
 
-        if not exists:
-            return alias
+        if isinstance(exc.orig, UniqueViolation):
+          continue
+
+
+    if not exists:
+        return alias
 
 
 @router.get("/top", response_model=list[RedirectTopResponse])
@@ -167,10 +183,17 @@ def create_auth_user_redirect(
 )
 def create_redirect(request: CreateRedirectRequest, db: db_dependency):
     print(request)
-    if request.alias and db.query(Redirect).filter(Redirect.alias == request.alias):
-        raise HTTPException(status_code=409, detail="Alias already taken")
-
     redirect = Redirect(**request.model_dump())
+
+    if request.alias and not db.query(Redirect).filter(Redirect.alias == request.alias).first():
+      db.add(redirect)
+      db.commit()
+      return redirect
+    elif request.alias is None:
+      redirect.alias = generate_unique_code(db,request)
+
+    else
+        raise HTTPException(status_code=409, detail="Alias already taken")
 
     if request.alias is None:
         redirect.alias = generate_unique_code(db)
