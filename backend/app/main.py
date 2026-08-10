@@ -1,11 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import RedirectResponse
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.db import engine
 from app.core.deps import db_dependency
 from app.core.settings import settings
-from app.middleware import MetricsMiddleware
+from app.logger import logger
+from app.middleware import MetricsMiddleware, RequestLoggerMiddleware
 from app.models import Base, Redirect
 from app.routers import auth, redirects, users, visits
 from app.tasks import add_redirect_visit
@@ -16,6 +18,7 @@ app = FastAPI(
     # docs_url="/docs",  # default
     # redoc_url="/redoc", # default
 )
+logger.info("Starting url shortner...")
 
 if settings.all_cors_origins:
     app.add_middleware(
@@ -26,12 +29,28 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
+app.add_middleware(RequestLoggerMiddleware)
+
 app.middleware(MetricsMiddleware)
 
 Base.metadata.create_all(engine)
 
 
-# still deciding if frontend will use this
+@app.get("/metrics")
+def metrics():
+    logger.info("Metrics endpoint accessed")
+    return Response(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST,
+    )
+
+
+app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(users.router, prefix=settings.API_V1_STR)
+app.include_router(redirects.router, prefix=settings.API_V1_STR)
+app.include_router(visits.router, prefix=settings.API_V1_STR)
+
+
 @app.get("/{redirect_alias}")
 def handle_redirects(db: db_dependency, redirect_alias: str):
     redirect = db.query(Redirect).filter(Redirect.alias == redirect_alias).first()
@@ -39,9 +58,3 @@ def handle_redirects(db: db_dependency, redirect_alias: str):
         raise HTTPException(status_code=404, detail="Redirect not found")
     add_redirect_visit.apply_async(args=[redirect.id])  # type: ignore[prop-decorator]
     return RedirectResponse(url=str(redirect.url), status_code=302)
-
-
-app.include_router(auth.router, prefix=settings.API_V1_STR)
-app.include_router(users.router, prefix=settings.API_V1_STR)
-app.include_router(redirects.router, prefix=settings.API_V1_STR)
-app.include_router(visits.router, prefix=settings.API_V1_STR)
