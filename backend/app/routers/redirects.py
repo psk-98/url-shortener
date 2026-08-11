@@ -3,6 +3,7 @@ import string
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, or_
+from sqlalchemy.exc import IntegrityError
 
 from app.core.deps import db_dependency, user_dependency
 from app.models import Redirect
@@ -16,7 +17,6 @@ from app.schemas.redirects import (
     UpdateRedirectRequest,
 )
 from app.tasks import add_redirect_visit
-from sqlalchemy.exc import IntergrityError
 
 router = APIRouter(prefix="/redirects", tags=["redirects"])
 
@@ -26,26 +26,29 @@ def random_string(min_length: int = 5, max_length: int = 20) -> str:
     return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
 
 
-def generate_unique_code(db,request) -> Redirect:
+def generate_unique_code(db, request) -> Redirect:
     alias = random_string()
-    redirect = Redirect(**request.model_dump()
-)
+    redirect = Redirect(**request.model_dump())
     # exists = db.query(Redirect).filter(Redirect.alias == alias).first()
     for _ in range(5):
-      redirect.alias = random_string()
+        redirect.alias = random_string()
 
-      try:
-        db.add(redirect)
-        db.commit()
-        db.refresh(redirect)
-        
-        return redirect
-      except IntegrityError as err:
-        db.rollback()
+        try:
+            db.add(redirect)
+            db.commit()
+            db.refresh(redirect)
 
-        if isinstance(exc.orig, UniqueViolation):
-          continue
+            return redirect
+        except IntegrityError as err:
+            db.rollback()
 
+            if isinstance(exc.orig, UniqueViolation):
+                continue
+
+    raise HTTPException(
+        status_code=500,
+        detail="Unable to generate a unique redirect code.",
+    )
 
     if not exists:
         return alias
@@ -185,14 +188,18 @@ def create_redirect(request: CreateRedirectRequest, db: db_dependency):
     print(request)
     redirect = Redirect(**request.model_dump())
 
-    if request.alias and not db.query(Redirect).filter(Redirect.alias == request.alias).first():
-      db.add(redirect)
-      db.commit()
-      return redirect
+    if (
+        request.alias
+        and not db.query(Redirect).filter(Redirect.alias == request.alias).first()
+    ):
+        db.add(redirect)
+        db.commit()
+        return redirect
     elif request.alias is None:
-      redirect.alias = generate_unique_code(db,request)
+        # redirect.alias = generate_unique_code(db,request)
+        return generate_unique_code(db, request)
 
-    else
+    else:
         raise HTTPException(status_code=409, detail="Alias already taken")
 
     if request.alias is None:
