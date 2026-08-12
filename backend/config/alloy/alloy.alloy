@@ -2,13 +2,13 @@
 
 prometheus.remote_write "default" {
   endpoint {
-    url = "http://local:9090/api/v1/write"
+    url = "http://prometheus:9090/api/v1/write"
   }
 }
 
 prometheus.scrape "metrics_5000" {
   targets = [{
-    __address__ = "localhost:8000",
+    __address__ = "app-1:8000",
     __metrics_path__ = "/metrics",
   }]
   forward_to = [prometheus.remote_write.default.receiver]
@@ -26,7 +26,7 @@ prometheus.scrape "metrics_default" {
 
 local.file_match "titan_logs" {
   path_targets = [{
-    __path__ = "/var/log/titan/*.log",
+    __path__ = "/code/*.log",
     job      = "titan",
     hostname = constants.hostname,
   }]
@@ -41,6 +41,6 @@ loki.source.file "log_scrape" {
 
 loki.write "loki" {
   endpoint {
-    url = "http://localhost:3100/loki/api/v1/push"
+    url = "http://loki:3100/loki/api/v1/push"
   }
 }

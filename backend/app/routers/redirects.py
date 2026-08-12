@@ -27,12 +27,10 @@ def random_string(min_length: int = 5, max_length: int = 20) -> str:
 
 
 def generate_unique_code(db, request) -> Redirect:
-    alias = random_string()
     redirect = Redirect(**request.model_dump())
-    # exists = db.query(Redirect).filter(Redirect.alias == alias).first()
+
     for _ in range(5):
         redirect.alias = random_string()
-
         try:
             db.add(redirect)
             db.commit()
