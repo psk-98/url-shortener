@@ -50,9 +50,6 @@ def generate_unique_code(db, request) -> Redirect:
         detail="Unable to generate a unique redirect code.",
     )
 
-    if not exists:
-        return alias
-
 
 @router.get("/top", response_model=list[RedirectTopResponse])
 def get_top_redirects(db: db_dependency, limit: int = 20):
@@ -163,20 +160,24 @@ def get_redirect_user_is_visiting(db: db_dependency, redirect_alias: str):
 def create_auth_user_redirect(
     request: CreateRedirectRequest, auth_user: user_dependency, db: db_dependency
 ):
-    if (
-        request.alias
-        and db.query(Redirect).filter(Redirect.alias == request.alias).first()
-    ):
-        raise HTTPException(status_code=409, detail="Alias already taken")
-
     redirect = Redirect(**request.model_dump(), owner=auth_user.get("user_id"))
 
-    if request.alias is None:
-        redirect.alias = generate_unique_code(db)
+    if request.alias:
+        try:
+            db.add(redirect)
+            db.commit()
+            return redirect
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Alias already taken")
 
-    db.add(redirect)
-    db.commit()
-    return redirect
+    elif request.alias is None:
+        redirect.alias = generate_unique_code(db, request)
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to generate a unique redirect code.",
+        )
 
 
 @router.post(
@@ -185,29 +186,26 @@ def create_auth_user_redirect(
     status_code=status.HTTP_201_CREATED,
 )
 def create_redirect(request: CreateRedirectRequest, db: db_dependency):
-    print(request)
     redirect = Redirect(**request.model_dump())
 
-    if (
-        request.alias
-        and not db.query(Redirect).filter(Redirect.alias == request.alias).first()
-    ):
-        db.add(redirect)
-        db.commit()
-        return redirect
+    if request.alias:
+        try:
+            db.add(redirect)
+            db.commit()
+            return redirect
+
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Alias already taken")
+
     elif request.alias is None:
-        # redirect.alias = generate_unique_code(db,request)
         return generate_unique_code(db, request)
 
     else:
-        raise HTTPException(status_code=409, detail="Alias already taken")
-
-    if request.alias is None:
-        redirect.alias = generate_unique_code(db)
-
-    db.add(redirect)
-    db.commit()
-    return redirect
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to generate a unique redirect code.",
+        )
 
 
 @router.patch(

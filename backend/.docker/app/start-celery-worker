@@ -3,4 +3,4 @@
 set -o errexit
 set -o nounset
 
-uv run celery -A app.tasks worker --loglevel=info
+uv run celery -A app.tasks worker --loglevel=info --concurrency=2

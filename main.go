@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	totalRequests = 1_000_000
-	workers       = 100
+	totalRequests = 1_000_00
+	workers       = 15
 )
 
 type RedirectRequest struct {
@@ -46,17 +46,48 @@ func randomString(bytesLength int) string {
 	return hex.EncodeToString(b)
 }
 
+func randomAlias() string {
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	const minLength = 6
+	const maxLength = 19
+
+	randomByte := make([]byte, 1)
+
+	if _, err := rand.Read(randomByte); err != nil {
+		panic(err)
+	}
+
+	length := minLength +
+		int(randomByte[0])%(maxLength-minLength+1)
+
+	randomBytes := make([]byte, length)
+
+	if _, err := rand.Read(randomBytes); err != nil {
+		panic(err)
+	}
+
+	result := make([]byte, length)
+
+	for i := range result {
+		result[i] = chars[int(randomBytes[i])%len(chars)]
+	}
+
+	return string(result)
+}
+
 func makePayload() RedirectRequest {
 	var alias *string
 
 	// Roughly 50% of requests have an alias.
 	randomByte := make([]byte, 1)
+
 	if _, err := rand.Read(randomByte); err != nil {
 		panic(err)
 	}
 
 	if randomByte[0]%2 == 0 {
-		value := "stress-" + randomString(8)
+		value := randomAlias()
 		alias = &value
 	}
 
@@ -67,7 +98,7 @@ func makePayload() RedirectRequest {
 }
 
 func main() {
-	baseURL := os.Getenv("BASE_URL")
+	baseURL := "http://localhost:8000" // os.Getenv("BASE_URL")
 
 	if baseURL == "" {
 		fmt.Println("BASE_URL environment variable is required")
@@ -108,8 +139,15 @@ func main() {
 	}
 	defer errorFile.Close()
 
-	createdWriter := bufio.NewWriterSize(createdFile, 1024*1024)
-	errorWriter := bufio.NewWriterSize(errorFile, 1024*1024)
+	createdWriter := bufio.NewWriterSize(
+		createdFile,
+		1024*1024,
+	)
+
+	errorWriter := bufio.NewWriterSize(
+		errorFile,
+		1024*1024,
+	)
 
 	defer createdWriter.Flush()
 	defer errorWriter.Flush()
@@ -149,7 +187,11 @@ func main() {
 
 				body, err := json.Marshal(payload)
 				if err != nil {
-					fmt.Printf("marshal error: %v\n", err)
+					fmt.Printf(
+						"marshal error: %v\n",
+						err,
+					)
+
 					continue
 				}
 
@@ -165,8 +207,15 @@ func main() {
 					continue
 				}
 
-				req.Header.Set("Content-Type", "application/json")
-				req.Header.Set("Accept", "application/json")
+				req.Header.Set(
+					"Content-Type",
+					"application/json",
+				)
+
+				req.Header.Set(
+					"Accept",
+					"application/json",
+				)
 
 				response, err := client.Do(req)
 
@@ -176,6 +225,7 @@ func main() {
 					stats.networkErr.Add(1)
 
 					errorMu.Lock()
+
 					fmt.Fprintf(
 						errorWriter,
 						"REQUEST=%d WORKER=%d NETWORK_ERROR=%q PAYLOAD=%s\n",
@@ -184,12 +234,16 @@ func main() {
 						err.Error(),
 						string(body),
 					)
+
 					errorMu.Unlock()
 
 					continue
 				}
 
-				responseBody, err := io.ReadAll(response.Body)
+				responseBody, err := io.ReadAll(
+					response.Body,
+				)
+
 				response.Body.Close()
 
 				if err != nil {
@@ -198,10 +252,13 @@ func main() {
 				}
 
 				switch {
-				case response.StatusCode >= 200 && response.StatusCode < 300:
+				case response.StatusCode >= 200 &&
+					response.StatusCode < 300:
+
 					stats.created.Add(1)
 
 					createdMu.Lock()
+
 					fmt.Fprintf(
 						createdWriter,
 						"REQUEST=%d STATUS=%d PAYLOAD=%s RESPONSE=%s\n",
@@ -210,12 +267,14 @@ func main() {
 						string(body),
 						string(responseBody),
 					)
+
 					createdMu.Unlock()
 
 				case response.StatusCode >= 500:
 					stats.serverErr.Add(1)
 
 					errorMu.Lock()
+
 					fmt.Fprintf(
 						errorWriter,
 						"REQUEST=%d STATUS=%d PAYLOAD=%s RESPONSE=%s\n",
@@ -224,6 +283,7 @@ func main() {
 						string(body),
 						string(responseBody),
 					)
+
 					errorMu.Unlock()
 
 				case response.StatusCode >= 400:
@@ -246,14 +306,21 @@ func main() {
 			select {
 			case <-ticker.C:
 				sent := stats.sent.Load()
-				currentRate := sent - previous
+
+				currentRate :=
+					sent - previous
+
 				previous = sent
 
-				elapsed := time.Since(start).Seconds()
+				elapsed :=
+					time.Since(start).Seconds()
 
 				var averageRate float64
+
 				if elapsed > 0 {
-					averageRate = float64(sent) / elapsed
+					averageRate =
+						float64(sent) /
+							elapsed
 				}
 
 				fmt.Printf(
@@ -300,21 +367,53 @@ func main() {
 	fmt.Println()
 	fmt.Println("Stress test finished")
 	fmt.Println("--------------------")
-	fmt.Printf("Duration       : %s\n", duration)
-	fmt.Printf("Requests sent  : %d\n", stats.sent.Load())
-	fmt.Printf("Created        : %d\n", stats.created.Load())
-	fmt.Printf("4xx responses  : %d\n", stats.clientErr.Load())
-	fmt.Printf("5xx responses  : %d\n", stats.serverErr.Load())
-	fmt.Printf("Network errors : %d\n", stats.networkErr.Load())
+
+	fmt.Printf(
+		"Duration       : %s\n",
+		duration,
+	)
+
+	fmt.Printf(
+		"Requests sent  : %d\n",
+		stats.sent.Load(),
+	)
+
+	fmt.Printf(
+		"Created        : %d\n",
+		stats.created.Load(),
+	)
+
+	fmt.Printf(
+		"4xx responses  : %d\n",
+		stats.clientErr.Load(),
+	)
+
+	fmt.Printf(
+		"5xx responses  : %d\n",
+		stats.serverErr.Load(),
+	)
+
+	fmt.Printf(
+		"Network errors : %d\n",
+		stats.networkErr.Load(),
+	)
 
 	if duration.Seconds() > 0 {
 		fmt.Printf(
 			"Average RPS    : %.2f\n",
-			float64(stats.sent.Load())/duration.Seconds(),
+			float64(
+				stats.sent.Load(),
+			)/duration.Seconds(),
 		)
 	}
 
 	fmt.Println()
-	fmt.Println("Created responses: created.log")
-	fmt.Println("5xx responses    : 5xx.log")
+
+	fmt.Println(
+		"Created responses: created.log",
+	)
+
+	fmt.Println(
+		"5xx responses    : 5xx.log",
+	)
 }
