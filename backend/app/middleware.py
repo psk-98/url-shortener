@@ -1,6 +1,6 @@
 import time
 
-from prometheus_client import Counter
+from prometheus_client import Counter, Histogram
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.logger import logger
@@ -8,6 +8,12 @@ from app.logger import logger
 REQUEST_COUNT = Counter(
     "http_requests_total",
     "Total number of HTTP requests",
+    ["app_name", "method", "endpoint", "http_status"],
+)
+
+REQUEST_LATENCY = Histogram(
+    "http_request_duration_seconds",
+    "Request latency",
     ["app_name", "method", "endpoint", "http_status"],
 )
 
@@ -53,6 +59,13 @@ class RequestLoggerMiddleware(BaseHTTPMiddleware):
 
 class MetricsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
+
+        REQUEST_LATENCY.labels(
+            app_name="webapp",
+            method=request.method,
+            endpoint=request.url.path,
+        ).time()
+
         response = await call_next(request)
 
         REQUEST_COUNT.labels(

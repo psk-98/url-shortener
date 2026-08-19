@@ -8,7 +8,7 @@ prometheus.remote_write "default" {
 
 prometheus.scrape "metrics_5000" {
   targets = [{
-    __address__ = "app-1:8000",
+    __address__ = "app:8000",
     __metrics_path__ = "/metrics",
   }]
   forward_to = [prometheus.remote_write.default.receiver]
@@ -27,7 +27,7 @@ prometheus.scrape "metrics_default" {
 local.file_match "titan_logs" {
   path_targets = [{
     __path__ = "/code/*.log",
-    job      = "titan",
+    job      = "fastapi",
     hostname = constants.hostname,
   }]
   sync_period = "5s"

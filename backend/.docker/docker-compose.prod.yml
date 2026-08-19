@@ -3,17 +3,6 @@ networks:
     driver: bridge
 
 services:
-  load-balancer:
-    image: nginx
-    container_name: url-shortener-nginx
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:8000:80"
-    networks:
-      - url-shortener
-    volumes:
-      - ./.docker/nginx:/etc/nginx/conf.d
-
   celery-worker:
     build:
       context: .
@@ -55,35 +44,20 @@ services:
     networks:
       - url-shortener
 
-  app-1:
-    container_name: url-shortener-instance-1
+  app:
+    container_name: url-shortener-app
     build:
       context: .
       dockerfile: ./.docker/app/Dockerfile
     command: /start
+    ports:
+      - "127.0.0.1:8000:8000"
     restart: unless-stopped
     depends_on:
       - db
     networks:
       - url-shortener
-  # app-2:
-  #   container_name: url-shortener-instance-2
-  #   build:
-  #     dockerfile: ./.docker/app/Dockerfile
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - url-shortener
-  # app-3:
-  #   container_name: url-shortener-instance-3
-  #   build:
-  #     dockerfile: ./.docker/app/Dockerfile
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - url-shortener
+
   db:
     container_name: url-shortener-db
     image: postgres:15
