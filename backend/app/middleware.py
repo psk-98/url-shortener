@@ -14,7 +14,7 @@ REQUEST_COUNT = Counter(
 REQUEST_LATENCY = Histogram(
     "http_request_duration_seconds",
     "Request latency",
-    ["app_name", "method", "endpoint", "http_status"],
+    ["app_name", "method", "endpoint"],
 )
 
 
@@ -61,7 +61,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
 
         REQUEST_LATENCY.labels(
-            app_name="webapp",
+            app_name="fastapi",
             method=request.method,
             endpoint=request.url.path,
         ).time()
@@ -69,7 +69,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         REQUEST_COUNT.labels(
-            app_name="webapp",
+            app_name="fastapi",
             method=request.method,
             endpoint=request.url.path,
             http_status=str(response.status_code),

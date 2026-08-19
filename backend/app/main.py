@@ -18,7 +18,8 @@ app = FastAPI(
     # docs_url="/docs",  # default
     # redoc_url="/redoc", # default
 )
-logger.info("Starting url shortner...")
+
+logger.info("Starting url shortener...")
 
 if settings.all_cors_origins:
     app.add_middleware(
@@ -31,7 +32,7 @@ if settings.all_cors_origins:
 
 app.add_middleware(RequestLoggerMiddleware)
 
-app.middleware(MetricsMiddleware)
+app.add_middleware(MetricsMiddleware)
 
 Base.metadata.create_all(engine)
 
