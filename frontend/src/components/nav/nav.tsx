@@ -2,6 +2,7 @@ import { cookies } from "next/headers"
 import Link from "next/link"
 import LogoutButton from "../auth/logout-button"
 import { Button } from "../ui/button"
+import { Logo } from "./logo"
 
 export default async function Nav() {
   const cookieStore = await cookies()
@@ -11,7 +12,7 @@ export default async function Nav() {
   return (
     <nav className="w-full px-10 md:px-16 lg:px-24 py-8 flex justify-between items-center">
       <div>
-        <Link href="/">Logo here</Link>
+        <Link href="/"><Logo /></Link>
       </div>
       <div className="flex justify-between">
         {isLoggedIn ? (
